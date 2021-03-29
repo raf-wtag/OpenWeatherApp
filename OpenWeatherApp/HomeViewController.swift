@@ -21,6 +21,9 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
     // Access uisng: currentLocation?.coordinate.latitude || currentLocation?.coordinate.longitude
     var currentLocation: CLLocation?
     
+    var latitude = 0.0
+    var longitude = 0.0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -64,6 +67,16 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
         currentLocation = locations.last
         print("lat: \(currentLocation?.coordinate.latitude) - lon: \(currentLocation?.coordinate.longitude)")
         
+        if let lat = currentLocation?.coordinate.latitude {
+            self.latitude = lat
+            print("Now Saving", self.latitude)
+        }
+        
+        if let lon = currentLocation?.coordinate.longitude {
+            self.longitude = lon
+            print("Now Saving", self.longitude)
+        }
+        
         // Now Stop the Spinner
         DispatchQueue.main.async {
             self.spinner.stopAnimating()
@@ -75,5 +88,14 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
         // TODO: Check if error occured then what happens!!
         print(error)
     }
-
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let nextViewController = segue.destination as? WeeklyDataViewController
+        
+        if nextViewController != nil {
+            nextViewController?.latitude = self.latitude
+            nextViewController?.longitude = self.longitude
+        }
+    }
+    
 }

@@ -21,6 +21,9 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
         }
     }
     
+    var latitude = 0.0
+    var longitude = 0.0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -44,7 +47,18 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
         
         var returnDailyData = [Daily]()
         
-        let urlString = "https://api.openweathermap.org/data/2.5/onecall?lat=23.8103&lon=90.4125&units=metric&exclude=current,minutely,hourly,alerts&appid=a32d1247d69743e1f60a87f3a5a904c8"
+        let address = "https://api.openweathermap.org/data/2.5/onecall?lat="
+        let lat = "\(latitude)"
+        let lon = "\(longitude)"
+        let APIKEY = "a32d1247d69743e1f60a87f3a5a904c8"
+        
+        print("I'm getting", latitude)
+        print("I'm getting", longitude)
+        
+        let urlString = address + lat + "&lon=" + lon + "&units=metric&exclude=current,minutely,hourly,alerts&appid=" + APIKEY
+        
+        print(urlString)
+//        let urlString = "https://api.openweathermap.org/data/2.5/onecall?lat=23.8103&lon=90.4125&units=metric&exclude=current,minutely,hourly,alerts&appid=a32d1247d69743e1f60a87f3a5a904c8"
 
         let url = URL(string: urlString)
         
