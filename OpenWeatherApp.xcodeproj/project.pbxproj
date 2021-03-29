@@ -13,6 +13,7 @@
 		FFD71E412611D41E00C8BFA5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FFD71E402611D41E00C8BFA5 /* Assets.xcassets */; };
 		FFD71E442611D41E00C8BFA5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FFD71E422611D41E00C8BFA5 /* LaunchScreen.storyboard */; };
 		FFD71E4F2611D6AA00C8BFA5 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFD71E4E2611D6AA00C8BFA5 /* HomeViewController.swift */; };
+		FFD71E532611DAA700C8BFA5 /* WeeklyDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFD71E522611DAA700C8BFA5 /* WeeklyDataViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		FFD71E432611D41E00C8BFA5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FFD71E452611D41E00C8BFA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FFD71E4E2611D6AA00C8BFA5 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		FFD71E522611DAA700C8BFA5 /* WeeklyDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyDataViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 				FFD71E392611D41D00C8BFA5 /* SceneDelegate.swift */,
 				FFD71E4E2611D6AA00C8BFA5 /* HomeViewController.swift */,
 				FFD71E3D2611D41D00C8BFA5 /* Main.storyboard */,
+				FFD71E522611DAA700C8BFA5 /* WeeklyDataViewController.swift */,
 				FFD71E402611D41E00C8BFA5 /* Assets.xcassets */,
 				FFD71E422611D41E00C8BFA5 /* LaunchScreen.storyboard */,
 				FFD71E452611D41E00C8BFA5 /* Info.plist */,
@@ -140,6 +143,7 @@
 				FFD71E382611D41D00C8BFA5 /* AppDelegate.swift in Sources */,
 				FFD71E3A2611D41D00C8BFA5 /* SceneDelegate.swift in Sources */,
 				FFD71E4F2611D6AA00C8BFA5 /* HomeViewController.swift in Sources */,
+				FFD71E532611DAA700C8BFA5 /* WeeklyDataViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
