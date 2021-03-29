@@ -111,39 +111,66 @@
                                 <rect key="frame" x="0.0" y="60" width="414" height="748"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="180" id="BuD-hU-zfo">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="table_cell" rowHeight="180" id="BuD-hU-zfo" customClass="CustomTableViewCell" customModule="OpenWeatherApp" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="180"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="BuD-hU-zfo" id="zDT-F4-ySh">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="180"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Date - MMMM DD, YYYY" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="buM-wh-6TW">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date - MMMM DD, YYYY" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="buM-wh-6TW">
                                                     <rect key="frame" x="20" y="11" width="374" height="60"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <color key="backgroundColor" systemColor="linkColor"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" secondItem="buM-wh-6TW" secondAttribute="height" multiplier="187:30" id="yE1-yS-agd"/>
+                                                    </constraints>
                                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="24"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Min: --" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wIu-3w-Ks8">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Min: --" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wIu-3w-Ks8">
                                                     <rect key="frame" x="20" y="101" width="170" height="50"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <color key="backgroundColor" systemColor="linkColor"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" secondItem="wIu-3w-Ks8" secondAttribute="height" multiplier="17:5" id="OuU-bo-m70"/>
+                                                    </constraints>
                                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Max: --" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3i7-AA-0DZ">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Max: --" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3i7-AA-0DZ">
                                                     <rect key="frame" x="224" y="101" width="170" height="50"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <color key="backgroundColor" systemColor="linkColor"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" secondItem="3i7-AA-0DZ" secondAttribute="height" multiplier="17:5" id="N1V-8y-uZ2"/>
+                                                    </constraints>
                                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
+                                            <constraints>
+                                                <constraint firstItem="wIu-3w-Ks8" firstAttribute="leading" secondItem="zDT-F4-ySh" secondAttribute="leadingMargin" id="0wg-sG-qXS"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="wIu-3w-Ks8" secondAttribute="bottom" constant="18" id="6Me-Ga-OlU"/>
+                                                <constraint firstItem="buM-wh-6TW" firstAttribute="leading" secondItem="zDT-F4-ySh" secondAttribute="leadingMargin" id="JzN-q2-b69"/>
+                                                <constraint firstItem="wIu-3w-Ks8" firstAttribute="top" secondItem="buM-wh-6TW" secondAttribute="bottom" constant="30" id="LoA-Lw-HU6"/>
+                                                <constraint firstItem="3i7-AA-0DZ" firstAttribute="top" secondItem="buM-wh-6TW" secondAttribute="bottom" constant="30" id="NeO-Zs-Co2"/>
+                                                <constraint firstItem="buM-wh-6TW" firstAttribute="trailing" secondItem="zDT-F4-ySh" secondAttribute="trailingMargin" id="Tl3-qc-CvJ"/>
+                                                <constraint firstItem="3i7-AA-0DZ" firstAttribute="trailing" secondItem="zDT-F4-ySh" secondAttribute="trailingMargin" id="a0n-RF-85G"/>
+                                                <constraint firstItem="buM-wh-6TW" firstAttribute="leading" secondItem="zDT-F4-ySh" secondAttribute="leadingMargin" id="fIi-lu-cex"/>
+                                                <constraint firstItem="buM-wh-6TW" firstAttribute="top" secondItem="zDT-F4-ySh" secondAttribute="topMargin" id="hc8-kb-7Un"/>
+                                                <constraint firstItem="3i7-AA-0DZ" firstAttribute="leading" secondItem="wIu-3w-Ks8" secondAttribute="trailing" constant="34" id="i54-HQ-pPk"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="3i7-AA-0DZ" secondAttribute="bottom" constant="18" id="iiP-gZ-6cf"/>
+                                                <constraint firstItem="buM-wh-6TW" firstAttribute="top" secondItem="zDT-F4-ySh" secondAttribute="topMargin" id="pW9-gq-Qwc"/>
+                                                <constraint firstItem="buM-wh-6TW" firstAttribute="trailing" secondItem="zDT-F4-ySh" secondAttribute="trailingMargin" id="qQ9-or-1QR"/>
+                                                <constraint firstItem="3i7-AA-0DZ" firstAttribute="leading" secondItem="wIu-3w-Ks8" secondAttribute="trailing" constant="34" id="rrc-XQ-aow"/>
+                                            </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="forecastDate" destination="buM-wh-6TW" id="14u-az-fwf"/>
+                                            <outlet property="forecastMaxTemp" destination="3i7-AA-0DZ" id="oyz-iy-dJQ"/>
+                                            <outlet property="forecastMinTemp" destination="wIu-3w-Ks8" id="zKR-Tm-ZHP"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
