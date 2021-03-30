@@ -80,7 +80,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="OpenWeatherAPP" id="jkR-bu-EyZ">
-                        <barButtonItem key="backBarButtonItem" title="Return" id="WoA-EH-UfN"/>
+                        <barButtonItem key="backBarButtonItem" title="Back" id="WoA-EH-UfN"/>
                     </navigationItem>
                     <connections>
                         <outlet property="locationNameLabel" destination="ghk-cJ-hFX" id="U8V-hl-ywQ"/>

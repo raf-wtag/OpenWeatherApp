@@ -13,7 +13,7 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
     @IBOutlet weak var customTableLable: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
-    var DailyData = [Daily]() {
+    var NextSevenDaysData = [Daily]() {
         didSet {
             DispatchQueue.main.async {
                 self.tableView.reloadData()
@@ -38,10 +38,10 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
         // Call & Get Data from API Call
         fetchAPIData(completionHandler: {
             data in
-            self.DailyData = data
+            self.NextSevenDaysData = data
             
-            if !self.DailyData.isEmpty {
-                self.DailyData.removeFirst()
+            if !self.NextSevenDaysData.isEmpty {
+                self.NextSevenDaysData.removeFirst()
             }
         })
         
@@ -126,7 +126,7 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return DailyData.count
+        return NextSevenDaysData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -134,13 +134,13 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
         let cell = tableView.dequeueReusableCell(withIdentifier: "table_cell") as! CustomTableViewCell
         
         if indexPath.row <= 6 {
-            cell.forecastDate.text = "\(self.DailyData[indexPath.row].dt.fromUnixTimeToDate())"
-            cell.forecastSunriseTime.text = "Sunrise: " + self.DailyData[indexPath.row].sunrise.fromUnixTimeToTime()
-            cell.forecastSunsetTime.text = "Sunset: " + self.DailyData[indexPath.row].sunset.fromUnixTimeToTime()
-            cell.forecastWeatherIcon.image = UIImage(named: self.DailyData[indexPath.row].weather[0].icon)
-            cell.forecastWeatherDescription.text = "" + self.DailyData[indexPath.row].weather[0].description.capitalized
-            cell.forecastMaxTemp.text = "Max: \(self.DailyData[indexPath.row].temp.max)°C"
-            cell.forecastMinTemp.text = "Min: \(self.DailyData[indexPath.row].temp.min)°C"
+            cell.forecastDate.text = "\(self.NextSevenDaysData[indexPath.row].dt.fromUnixTimeToDate())"
+            cell.forecastSunriseTime.text = "Sunrise: " + self.NextSevenDaysData[indexPath.row].sunrise.fromUnixTimeToTime()
+            cell.forecastSunsetTime.text = "Sunset: " + self.NextSevenDaysData[indexPath.row].sunset.fromUnixTimeToTime()
+            cell.forecastWeatherIcon.image = UIImage(named: self.NextSevenDaysData[indexPath.row].weather[0].icon)
+            cell.forecastWeatherDescription.text = "" + self.NextSevenDaysData[indexPath.row].weather[0].description.capitalized
+            cell.forecastMaxTemp.text = "Max: \(self.NextSevenDaysData[indexPath.row].temp.max)°C"
+            cell.forecastMinTemp.text = "Min: \(self.NextSevenDaysData[indexPath.row].temp.min)°C"
             
         }
         
