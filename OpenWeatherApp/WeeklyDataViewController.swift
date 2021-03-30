@@ -23,9 +23,17 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
     
     var latitude = 0.0
     var longitude = 0.0
+    var secretAPIKEY = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Load API Key from SecretKey.json File -> "APIKEY" : "secretkey"
+        if let apiData = self.readSecretKeyFile(forFileName: "Keys") {
+            if let temp = self.parseSecretKeyFile(jsonData: apiData) {
+                secretAPIKEY = temp
+            }
+        }
         
         // Call & Get Data from API Call
         fetchAPIData(completionHandler: {
@@ -42,6 +50,31 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
         tableView.delegate = self
     }
     
+    // MARK: GET APIKEY From External File
+    // Read the .json file
+    private func readSecretKeyFile(forFileName name: String) -> Data? {
+        do {
+            if let bundlePath = Bundle.main.path(forResource: name, ofType: "json"), let jsonData = try String(contentsOfFile: bundlePath).data(using: .utf8) {
+                return jsonData
+            }
+        } catch {
+            print("API KEY LOADING FAILED WITH ERROR", error)
+        }
+        return nil
+    }
+    
+    // Decode the Key from json
+    private func parseSecretKeyFile(jsonData: Data) -> String? {
+        do {
+            let decodedSecretKeys = try JSONDecoder().decode(SecretKeysMap.self, from: jsonData)
+            print("API key is", decodedSecretKeys.APIKEY)
+            return decodedSecretKeys.APIKEY
+        } catch {
+            print("Hey!! Error in Decoding!!")
+        }
+        return nil
+    }
+    
     // MARK: Call & Fetch the API Data
     func fetchAPIData(completionHandler: @escaping ([Daily]) -> Void) {
         
@@ -50,7 +83,8 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
         let address = "https://api.openweathermap.org/data/2.5/onecall?lat="
         let lat = "\(latitude)"
         let lon = "\(longitude)"
-        let APIKEY = "a32d1247d69743e1f60a87f3a5a904c8"
+//        let APIKEY = "a32d1247d69743e1f60a87f3a5a904c8"
+        let APIKEY = secretAPIKEY
         
         print("I'm getting", latitude)
         print("I'm getting", longitude)
