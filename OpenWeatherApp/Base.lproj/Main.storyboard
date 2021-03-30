@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="eQH-Nl-5tl">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -9,7 +9,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Home View Controller-->
+        <!--OpenWeatherAPP-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="HomeViewController" customModule="OpenWeatherApp" customModuleProvider="target" sceneMemberID="viewController">
@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Location?" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ghk-cJ-hFX">
-                                <rect key="frame" x="20" y="64" width="374" height="210.5"/>
+                                <rect key="frame" x="20" y="108" width="374" height="210.5"/>
                                 <color key="backgroundColor" systemColor="linkColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="ghk-cJ-hFX" secondAttribute="height" multiplier="16:9" id="wZZ-Nu-Gmf"/>
@@ -28,7 +28,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Today's Forecast" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="18J-wo-wVU">
-                                <rect key="frame" x="20" y="419.5" width="374" height="210.5"/>
+                                <rect key="frame" x="20" y="435.5" width="374" height="210.5"/>
                                 <color key="backgroundColor" systemColor="linkColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="18J-wo-wVU" secondAttribute="height" multiplier="16:9" id="lhZ-3k-jOn"/>
@@ -38,11 +38,11 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GrC-RL-NjR">
-                                <rect key="frame" x="116" y="670" width="183" height="30"/>
+                                <rect key="frame" x="116" y="686" width="183" height="30"/>
                                 <color key="backgroundColor" systemColor="opaqueSeparatorColor"/>
                                 <state key="normal" title="Week Forecast"/>
                                 <connections>
-                                    <segue destination="n4a-th-mre" kind="showDetail" id="9rV-3N-gw9"/>
+                                    <segue destination="n4a-th-mre" kind="show" id="9rV-3N-gw9"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Today's Hourly Forecast" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="boz-DS-rm8">
@@ -56,7 +56,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="1Ad-Q9-R74">
-                                <rect key="frame" x="145" y="327.5" width="124" height="37"/>
+                                <rect key="frame" x="145" y="358.5" width="124" height="37"/>
                             </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -64,7 +64,7 @@
                         <constraints>
                             <constraint firstItem="ghk-cJ-hFX" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="1BB-jN-fso"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="GrC-RL-NjR" secondAttribute="trailing" constant="115" id="1GV-i7-B0I"/>
-                            <constraint firstItem="18J-wo-wVU" firstAttribute="top" secondItem="1Ad-Q9-R74" secondAttribute="bottom" constant="55" id="8Fe-kX-shA"/>
+                            <constraint firstItem="18J-wo-wVU" firstAttribute="top" secondItem="1Ad-Q9-R74" secondAttribute="bottom" constant="40" id="8Fe-kX-shA"/>
                             <constraint firstItem="ghk-cJ-hFX" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="Dkd-UU-v0g"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="18J-wo-wVU" secondAttribute="trailing" constant="20" id="SRa-HK-R4w"/>
                             <constraint firstItem="boz-DS-rm8" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="U8d-L0-J8w"/>
@@ -75,10 +75,13 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="1Ad-Q9-R74" secondAttribute="trailing" constant="145" id="qxe-Ww-5aa"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="boz-DS-rm8" secondAttribute="trailing" constant="20" id="rUB-rm-XDT"/>
                             <constraint firstItem="1Ad-Q9-R74" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="145" id="su9-kF-X63"/>
-                            <constraint firstItem="1Ad-Q9-R74" firstAttribute="top" secondItem="ghk-cJ-hFX" secondAttribute="bottom" constant="53" id="vBY-Oo-XgY"/>
+                            <constraint firstItem="1Ad-Q9-R74" firstAttribute="top" secondItem="ghk-cJ-hFX" secondAttribute="bottom" constant="40" id="vBY-Oo-XgY"/>
                             <constraint firstItem="GrC-RL-NjR" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="116" id="yL5-Hf-QSt"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="OpenWeatherAPP" id="jkR-bu-EyZ">
+                        <barButtonItem key="backBarButtonItem" title="Return" id="WoA-EH-UfN"/>
+                    </navigationItem>
                     <connections>
                         <outlet property="locationNameLabel" destination="ghk-cJ-hFX" id="U8V-hl-ywQ"/>
                         <outlet property="presentDayForecast" destination="18J-wo-wVU" id="4yv-Dx-A6r"/>
@@ -88,18 +91,18 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="141" y="80"/>
+            <point key="canvasLocation" x="1050.7246376811595" y="79.6875"/>
         </scene>
         <!--Weekly Data View Controller-->
         <scene sceneID="G6l-sZ-Pc6">
             <objects>
                 <viewController id="n4a-th-mre" customClass="WeeklyDataViewController" customModule="OpenWeatherApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="mXw-sd-o0K">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="GW6-xn-RIc">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="table_cell" rowHeight="380" id="BuD-hU-zfo" customClass="CustomTableViewCell" customModule="OpenWeatherApp" customModuleProvider="target">
@@ -223,7 +226,25 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WhS-W0-KKF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="915.94202898550736" y="79.6875"/>
+            <point key="canvasLocation" x="1826.0869565217392" y="79.6875"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="1kE-rU-P7T">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="eQH-Nl-5tl" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="EWl-gZ-tPq">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="x1C-Rb-aEB"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="3Go-f8-nXV" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="140.57971014492756" y="79.6875"/>
         </scene>
     </scenes>
     <resources>
