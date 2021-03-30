@@ -134,7 +134,11 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
         let cell = tableView.dequeueReusableCell(withIdentifier: "table_cell") as! CustomTableViewCell
         
         if indexPath.row <= 6 {
-            cell.forecastDate.text = "\(self.DailyData[indexPath.row].dt.fromUnixTimeStamp())"
+            cell.forecastDate.text = "\(self.DailyData[indexPath.row].dt.fromUnixTimeToDate())"
+            cell.forecastSunriseTime.text = "Sunrise: " + self.DailyData[indexPath.row].sunrise.fromUnixTimeToTime()
+            cell.forecastSunsetTime.text = "Sunset: " + self.DailyData[indexPath.row].sunset.fromUnixTimeToTime()
+            cell.forecastWeatherIcon.image = UIImage(named: self.DailyData[indexPath.row].weather[0].icon)
+            cell.forecastWeatherDescription.text = "" + self.DailyData[indexPath.row].weather[0].description.capitalized
             cell.forecastMaxTemp.text = "Max: \(self.DailyData[indexPath.row].temp.max)°C"
             cell.forecastMinTemp.text = "Min: \(self.DailyData[indexPath.row].temp.min)°C"
             
@@ -145,14 +149,14 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 180
+        return 335
     }
     
 }
 
 extension Int {
 
-    func  fromUnixTimeStamp() -> String {
+    func  fromUnixTimeToDate() -> String {
         let date = Date(timeIntervalSince1970: TimeInterval(self))
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMMM dd, yyyy"
@@ -161,4 +165,15 @@ extension Int {
         }
         return ""
     }
+    
+    func  fromUnixTimeToTime() -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(self))
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "h:mm a"
+        if let retData = dateFormatter.string(for: date) {
+            return retData
+        }
+        return ""
+    }
+    
 }

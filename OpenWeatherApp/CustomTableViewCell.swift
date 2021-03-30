@@ -11,6 +11,10 @@ class CustomTableViewCell: UITableViewCell {
 
     
     @IBOutlet weak var forecastDate: UILabel!
+    @IBOutlet weak var forecastSunriseTime: UILabel!
+    @IBOutlet weak var forecastSunsetTime: UILabel!
+    @IBOutlet weak var forecastWeatherIcon: UIImageView!
+    @IBOutlet weak var forecastWeatherDescription: UILabel!
     @IBOutlet weak var forecastMinTemp: UILabel!
     @IBOutlet weak var forecastMaxTemp: UILabel!
     
