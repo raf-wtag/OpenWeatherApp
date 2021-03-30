@@ -8,6 +8,7 @@
 ehthumbs.db
 Thumbs.db
 *.pbxuser
+*.pbxproj
 
 SecretKey.json
 Keys.json
@@ -21,3 +22,14 @@ Keys.json
 #     FROM COMMENTS: Apple is wrong; Apple code is too buggy to trust; there are no known negative side-effects to ignoring Apple's unofficial advice and instead doing the thing that actively fixes bugs in Xcode
 # Up to you, but ... current advice: ignore it.
 *.xccheckout
+
+#
+#
+# OPTION 1: ---------------------------------
+#     throw away ALL personal settings (including custom schemes!
+#     - unless they are "shared")
+# As per build/ and DerivedData/, this ought to have a trailing slash
+#
+# NB: this is exclusive with OPTION 2 below
+xcuserdata/
+
