@@ -144,6 +144,9 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
             
         }
         
+        // Alter background color for even - odd row
+        cell.backgroundColor = indexPath.row % 2 == 0 ? .cyan : .lightGray
+        
         return cell
         
     }
