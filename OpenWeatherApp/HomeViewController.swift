@@ -12,7 +12,13 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
 
     @IBOutlet weak var locationNameLabel: UILabel!
     @IBOutlet weak var spinner: UIActivityIndicatorView!
-    @IBOutlet weak var presentDayForecast: UILabel!
+    @IBOutlet weak var presentDayDateNTime: UILabel!
+    @IBOutlet weak var presentDayTemp: UILabel!
+    @IBOutlet weak var presentDayWeatherIcon: UIImageView!
+    @IBOutlet weak var presentDaySunriseTime: UILabel!
+    @IBOutlet weak var presentDaySunsetTime: UILabel!
+    @IBOutlet weak var presentDayFeels: UILabel!
+    @IBOutlet weak var presentdayWeatherDescription: UILabel!
     @IBOutlet weak var weekForecastButton: UIButton!
     
     // Declare CLLocationmanager type variables to manage location data
@@ -27,6 +33,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
     var secretAPIKEY = ""
     var NextSevenDaysData = [Daily]()
     var PresentDayData = [Daily]()
+    var CurrentDayData = Current(dt: 0, sunrise: 0, sunset: 0, temp: 0.0, feels_like: 0.0, weather: [])
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -99,8 +106,11 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
         // MARK: API Calling Start
         // As now we have location now lets Call & Get Data from API Call
         fetchAPIData(completionHandler: {
-            data in
-            self.NextSevenDaysData = data
+            (current, weeklydata) in
+            self.CurrentDayData = current
+            self.NextSevenDaysData = weeklydata
+            
+            print("After Fetching we got -> ", self.CurrentDayData)
             
             if !self.NextSevenDaysData.isEmpty {
                 self.PresentDayData = Array(self.NextSevenDaysData.prefix(1))
@@ -108,11 +118,30 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
 //                print("Again Printing", self.PresentDayData[0].weather[0].description)
                 self.NextSevenDaysData.removeFirst()
             }
+            
+            DispatchQueue.main.async {
+                print("In Dispathch",self.CurrentDayData)
+                self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
+                self.presentDayTemp.text = "\(self.CurrentDayData.temp)°C"
+                self.presentDayWeatherIcon.image = UIImage(named: self.CurrentDayData.weather[0].icon)
+                self.presentDaySunriseTime.text = "Sunrise: " + self.CurrentDayData.sunrise.fromUnixTimeToTime()
+                self.presentDaySunsetTime.text = "Sunset: " + self.CurrentDayData.sunset.fromUnixTimeToTime()
+                self.presentDayFeels.text = "Feels like: \(self.CurrentDayData.feels_like)°C"
+                self.presentdayWeatherDescription.text = self.CurrentDayData.weather[0].description.capitalized
+            }
         })
         
         // Now Stop the Spinner
         DispatchQueue.main.async {
             self.spinner.stopAnimating()
+//            print("In Dispathch",self.CurrentDayData)
+//            self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
+//            self.presentDayTemp.text = "\(self.CurrentDayData.temp)"
+//            self.presentDayWeatherIcon.image = UIImage(named: self.CurrentDayData.weather[0].icon)
+//            self.presentDaySunriseTime.text = self.CurrentDayData.sunrise.fromUnixTimeToTime()
+//            self.presentDaySunsetTime.text = self.CurrentDayData.sunset.fromUnixTimeToTime()
+//            self.presentDayFeels.text = "\(self.CurrentDayData.feels_like)"
+//            self.presentdayWeatherDescription.text = self.CurrentDayData.weather[0].description
         }
     }
     
@@ -148,7 +177,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
     }
     
     // MARK: Call & Fetch the API Data
-    func fetchAPIData(completionHandler: @escaping ([Daily]) -> Void) {
+    func fetchAPIData(completionHandler: @escaping (Current, [Daily]) -> ()) {
         
         var returnDailyData = [Daily]()
         
@@ -161,7 +190,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
         print("I'm getting", latitude)
         print("I'm getting", longitude)
         
-        let urlString = address + lat + "&lon=" + lon + "&units=metric&exclude=current,minutely,hourly,alerts&appid=" + APIKEY
+        let urlString = address + lat + "&lon=" + lon + "&units=metric&exclude=minutely,hourly,alerts&appid=" + APIKEY
         
         print(urlString)
 //        let urlString = "https://api.openweathermap.org/data/2.5/onecall?lat=23.8103&lon=90.4125&units=metric&exclude=current,minutely,hourly,alerts&appid=a32d1247d69743e1f60a87f3a5a904c8"
@@ -170,6 +199,8 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
         
         let task = URLSession.shared.dataTask(with: url!, completionHandler: { (data, response, error) in
            
+            var returnCurrentData = Current(dt: 0, sunrise: 0, sunset: 0, temp: 0.0, feels_like: 0.0, weather: [])
+            
             guard let data = data, error == nil else {
                 print("Error Occured")
                 return
@@ -183,13 +214,14 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
             
             if let res = result {
                 returnDailyData = res.daily
+                returnCurrentData = res.current
             }
             
-            completionHandler(returnDailyData)
+            completionHandler(returnCurrentData, returnDailyData)
         })
         task.resume()
         
-        completionHandler(returnDailyData)
+//        completionHandler(returnDailyData, retu)
     }
     
     // Mark: Segue Part. From here we pass the data to the other view

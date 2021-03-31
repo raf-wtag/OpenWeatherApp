@@ -13,6 +13,7 @@ struct WeatherData: Codable {
     let timezone: String
 //    let timezone_offset: Int
     var daily: [Daily]
+    var current : Current
     
     
     mutating func sortDailyArray() {
@@ -73,4 +74,14 @@ struct Weather: Codable {
 
 struct SecretKeysMap: Codable {
     let APIKEY: String
+}
+
+struct Current: Codable {
+    let dt : Int
+    let sunrise : Int
+    let sunset : Int
+    let temp : Double // Error
+    let feels_like : Double
+    let weather : [Weather]
+    
 }
