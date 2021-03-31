@@ -14,7 +14,9 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
 //    var latitude = 0.0
 //    var longitude = 0.0
     
-    var NextSevenDaysData = [Daily]() 
+    var NextSevenDaysData = [Daily]()
+    
+    var iconImage: UIImage? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,7 +45,8 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
             cell.forecastDate.text = "\(self.NextSevenDaysData[indexPath.row].dt.fromUnixTimeToDate())"
 //            cell.forecastSunriseTime.text = "Sunrise: " + self.NextSevenDaysData[indexPath.row].sunrise.fromUnixTimeToTime()
 //            cell.forecastSunsetTime.text = "Sunset: " + self.NextSevenDaysData[indexPath.row].sunset.fromUnixTimeToTime()
-            cell.forecastWeatherIcon.image = UIImage(named: self.NextSevenDaysData[indexPath.row].weather[0].icon)
+//            cell.forecastWeatherIcon.image = UIImage(named: self.NextSevenDaysData[indexPath.row].weather[0].icon)
+            cell.forecastWeatherIcon.load(urlString: "https://openweathermap.org/img/wn/" + self.NextSevenDaysData[indexPath.row].weather[0].icon + ".png")
             cell.forecastWeatherDescription.text = "" + self.NextSevenDaysData[indexPath.row].weather[0].description.capitalized
             cell.forecastMaxTemp.text = "\(self.NextSevenDaysData[indexPath.row].temp.max)°C"
             cell.forecastMinTemp.text = "\(self.NextSevenDaysData[indexPath.row].temp.min)°C"
@@ -60,40 +63,5 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 100
     }
-    
-}
-
-extension Int {
-
-    func  fromUnixTimeToDate() -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(self))
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMMM dd, yyyy"
-        if let retData = dateFormatter.string(for: date) {
-            return retData
-        }
-        return ""
-    }
-    
-    func  fromUnixTimeToTime() -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(self))
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "h:mm a"
-        if let retData = dateFormatter.string(for: date) {
-            return retData
-        }
-        return ""
-    }
-    
-    func  fromUnixTimeToTimeNDate() -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(self))
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM d, h:mm a"
-        if let retData = dateFormatter.string(for: date) {
-            return retData
-        }
-        return ""
-    }
-    
     
 }
