@@ -9,8 +9,6 @@ import UIKit
 
 class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    
-    @IBOutlet weak var customTableLable: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
     var NextSevenDaysData = [Daily]() {
@@ -20,6 +18,8 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
             }
         }
     }
+    
+    var PresentDayData = [Daily]()
     
     var latitude = 0.0
     var longitude = 0.0
@@ -41,6 +41,9 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
             self.NextSevenDaysData = data
             
             if !self.NextSevenDaysData.isEmpty {
+                self.PresentDayData = Array(self.NextSevenDaysData.prefix(1))
+//                print("Now printing", self.PresentDayData)
+//                print("Again Printing", self.PresentDayData[0].weather[0].description)
                 self.NextSevenDaysData.removeFirst()
             }
         })
