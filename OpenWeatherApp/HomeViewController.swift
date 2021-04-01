@@ -50,13 +50,13 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
 
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        // Again Check for location permission and similar stuffs
-        fetchCurrentLocation()
-        
-    }
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        
+//        // Again Check for location permission and similar stuffs
+//        fetchCurrentLocation()
+//        
+//    }
     
     // MARK: - Location Part
     func fetchCurrentLocation() {
@@ -123,7 +123,9 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
                 print("In Dispathch",self.CurrentDayData)
                 self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
                 self.presentDayTemp.text = "\(self.CurrentDayData.temp)°C"
-                self.presentDayWeatherIcon.image = UIImage(named: self.CurrentDayData.weather[0].icon)
+                let url = URL(string: "https://openweathermap.org/img/wn/" + self.CurrentDayData.weather[0].icon + ".png")
+                self.presentDayWeatherIcon.imageLoad(from: url!)
+//                self.presentDayWeatherIcon.image = UIImage(named: self.CurrentDayData.weather[0].icon)
                 self.presentDaySunriseTime.text = "Sunrise: " + self.CurrentDayData.sunrise.fromUnixTimeToTime()
                 self.presentDaySunsetTime.text = "Sunset: " + self.CurrentDayData.sunset.fromUnixTimeToTime()
                 self.presentDayFeels.text = "Feels like: \(self.CurrentDayData.feels_like)°C"

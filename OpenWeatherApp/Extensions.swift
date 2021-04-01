@@ -8,6 +8,8 @@
 import Foundation
 import UIKit
 
+let imageCache = NSCache<AnyObject, AnyObject>()
+
 extension Int {
 
     func  fromUnixTimeToDate() -> String {
@@ -45,16 +47,19 @@ extension Int {
 
 extension UIImageView {
     
-    func load(urlString: String) {
-        print("Firstly Extension",urlString)
-        guard let url = URL(string: urlString) else {
-            print("Extension in Failed")
+    func imageLoad(from url: URL) {
+        
+        if let imageFromCache = imageCache.object(forKey: url as AnyObject) as? UIImage {
+            print("Now Fetching From Cache")
+            self.image =  imageFromCache
             return
         }
         print("In Extension")
         DispatchQueue.global().async { [weak self] in
             if let data = try? Data(contentsOf: url) {
                 if let image = UIImage(data: data) {
+                    imageCache.setObject(image, forKey: url as AnyObject)
+                    print("Now Fetching from url")
                     DispatchQueue.main.async {
                         self?.image = image
                     }
