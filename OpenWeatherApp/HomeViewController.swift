@@ -8,7 +8,7 @@
 import UIKit
 import CoreLocation
 
-class HomeViewController: UIViewController , CLLocationManagerDelegate{
+class HomeViewController: UIViewController , CLLocationManagerDelegate {
 
     @IBOutlet weak var locationNameLabel: UILabel!
     @IBOutlet weak var spinner: UIActivityIndicatorView!
@@ -20,6 +20,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
     @IBOutlet weak var presentDayFeels: UILabel!
     @IBOutlet weak var presentdayWeatherDescription: UILabel!
     @IBOutlet weak var weekForecastButton: UIButton!
+    @IBOutlet weak var collection_View: UICollectionView!
     
     // Declare CLLocationmanager type variables to manage location data
     var locationManager: CLLocationManager?
@@ -34,6 +35,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
     var NextSevenDaysData = [Daily]()
     var PresentDayData = [Daily]()
     var CurrentDayData = Current(dt: 0, sunrise: 0, sunset: 0, temp: 0.0, feels_like: 0.0, weather: [])
+    var HourlyData = [Hourly]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,15 +49,19 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
 
         // Access the device location and if successful then call API
         fetchCurrentLocation()
+        
+        // Define CollectionViewDataSource
+//        collection_View.dataSource = self
+//        collection_View.delegate = self
 
     }
     
 //    override func viewDidAppear(_ animated: Bool) {
 //        super.viewDidAppear(animated)
-//        
+//
 //        // Again Check for location permission and similar stuffs
 //        fetchCurrentLocation()
-//        
+//
 //    }
     
     // MARK: - Location Part
@@ -106,9 +112,10 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
         // MARK: API Calling Start
         // As now we have location now lets Call & Get Data from API Call
         fetchAPIData(completionHandler: {
-            (current, weeklydata) in
+            (current, weeklydata, hourlydata) in
             self.CurrentDayData = current
             self.NextSevenDaysData = weeklydata
+            self.HourlyData = hourlydata
             
             print("After Fetching we got -> ", self.CurrentDayData)
             
@@ -130,6 +137,8 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
                 self.presentDaySunsetTime.text = "Sunset: " + self.CurrentDayData.sunset.fromUnixTimeToTime()
                 self.presentDayFeels.text = "Feels like: \(self.CurrentDayData.feels_like)°C"
                 self.presentdayWeatherDescription.text = self.CurrentDayData.weather[0].description.capitalized
+                
+                self.collection_View.reloadData()
             }
         })
         
@@ -179,9 +188,10 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
     }
     
     // MARK: Call & Fetch the API Data
-    func fetchAPIData(completionHandler: @escaping (Current, [Daily]) -> ()) {
+    func fetchAPIData(completionHandler: @escaping (Current, [Daily], [Hourly]) -> ()) {
         
         var returnDailyData = [Daily]()
+        var returnHourlyData = [Hourly]()
         
         let address = "https://api.openweathermap.org/data/2.5/onecall?lat="
         let lat = "\(latitude)"
@@ -192,7 +202,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
         print("I'm getting", latitude)
         print("I'm getting", longitude)
         
-        let urlString = address + lat + "&lon=" + lon + "&units=metric&exclude=minutely,hourly,alerts&appid=" + APIKEY
+        let urlString = address + lat + "&lon=" + lon + "&units=metric&exclude=minutely,alerts&appid=" + APIKEY
         
         print(urlString)
 //        let urlString = "https://api.openweathermap.org/data/2.5/onecall?lat=23.8103&lon=90.4125&units=metric&exclude=current,minutely,hourly,alerts&appid=a32d1247d69743e1f60a87f3a5a904c8"
@@ -217,9 +227,10 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
             if let res = result {
                 returnDailyData = res.daily
                 returnCurrentData = res.current
+                returnHourlyData = res.hourly
             }
             
-            completionHandler(returnCurrentData, returnDailyData)
+            completionHandler(returnCurrentData, returnDailyData, returnHourlyData)
         })
         task.resume()
         
@@ -236,5 +247,24 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate{
             nextViewController?.NextSevenDaysData = self.NextSevenDaysData
         }
     }
+    
+    // MARK: CollectionView
+//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+//        return HourlyData.count
+//    }
+//
+//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionview_cell", for: indexPath) as! CustomCollectionViewCell
+//        print("\(self.HourlyData[indexPath.row].temp)°C")
+//        print(self.HourlyData[indexPath.row].dt.fromUnixTimeToTime())
+//        cell.forecastHourlyTemp.text = "\(self.HourlyData[indexPath.row].temp)°C"
+//        cell.forecastHourlyTime.text = self.HourlyData[indexPath.row].dt.fromUnixTimeToTime()
+//        cell.forecastHourlyWeatherIcon.image = UIImage(named: self.HourlyData[indexPath.row].weather[0].icon)
+//
+//        return cell
+//    }
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+//            return CGSize(width: view.frame.width, height: 200)
+//    }
     
 }

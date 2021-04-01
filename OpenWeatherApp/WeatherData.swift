@@ -14,6 +14,7 @@ struct WeatherData: Codable {
 //    let timezone_offset: Int
     var daily: [Daily]
     var current : Current
+    var hourly: [Hourly]
     
     
     mutating func sortDailyArray() {
@@ -84,4 +85,11 @@ struct Current: Codable {
     let feels_like : Double
     let weather : [Weather]
     
+}
+
+struct Hourly: Codable {
+    let dt: Int
+    let temp: Double
+    let feels_like: Double
+    let weather: [Weather]
 }
