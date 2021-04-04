@@ -126,6 +126,12 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate {
                 self.NextSevenDaysData.removeFirst()
             }
             
+            if !self.HourlyData.isEmpty {
+                print("Before Slicing", self.HourlyData.count)
+                self.HourlyData = Array(self.HourlyData[0...23])
+                print("After Slicing", self.HourlyData.count)
+            }
+            
             DispatchQueue.main.async {
                 print("In Dispathch",self.CurrentDayData)
                 self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
