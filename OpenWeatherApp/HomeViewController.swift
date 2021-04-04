@@ -8,7 +8,7 @@
 import UIKit
 import CoreLocation
 
-class HomeViewController: UIViewController , CLLocationManagerDelegate {
+class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollectionViewDataSource {
 
     @IBOutlet weak var locationNameLabel: UILabel!
     @IBOutlet weak var spinner: UIActivityIndicatorView!
@@ -51,7 +51,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate {
         fetchCurrentLocation()
         
         // Define CollectionViewDataSource
-//        collection_View.dataSource = self
+        collection_View.dataSource = self
 //        collection_View.delegate = self
 
     }
@@ -256,22 +256,28 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate {
     }
     
     // MARK: CollectionView
-//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return HourlyData.count
-//    }
-//
-//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionview_cell", for: indexPath) as! CustomCollectionViewCell
-//        print("\(self.HourlyData[indexPath.row].temp)°C")
-//        print(self.HourlyData[indexPath.row].dt.fromUnixTimeToTime())
-//        cell.forecastHourlyTemp.text = "\(self.HourlyData[indexPath.row].temp)°C"
-//        cell.forecastHourlyTime.text = self.HourlyData[indexPath.row].dt.fromUnixTimeToTime()
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return HourlyData.count
+    }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionview_cell", for: indexPath) as! CustomCollectionViewCell
+        print("\(self.HourlyData[indexPath.row].temp)°C")
+        print(self.HourlyData[indexPath.row].dt.fromUnixTimeToTime())
+        cell.forecastHourlyTemp.text = "\(self.HourlyData[indexPath.row].temp)°C"
+        cell.forecastHourlyTime.text = self.HourlyData[indexPath.row].dt.fromUnixTimeToTime()
 //        cell.forecastHourlyWeatherIcon.image = UIImage(named: self.HourlyData[indexPath.row].weather[0].icon)
-//
-//        return cell
-//    }
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//            return CGSize(width: view.frame.width, height: 200)
-//    }
+        let url = URL(string: "https://openweathermap.org/img/wn/" + self.HourlyData[indexPath.row].weather[0].icon + ".png")
+        cell.forecastHourlyWeatherIcon.imageLoad(from: url!)
+
+        return cell
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+            return CGSize(width: view.frame.width, height: 200)
+    }
     
 }
