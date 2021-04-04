@@ -49,8 +49,8 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
             let url = URL(string: "https://openweathermap.org/img/wn/" + self.NextSevenDaysData[indexPath.row].weather[0].icon + ".png")
             cell.forecastWeatherIcon.imageLoad(from: url!)
             cell.forecastWeatherDescription.text = "" + self.NextSevenDaysData[indexPath.row].weather[0].description.capitalized
-            cell.forecastMaxTemp.text = "\(self.NextSevenDaysData[indexPath.row].temp.max)°C"
-            cell.forecastMinTemp.text = "\(self.NextSevenDaysData[indexPath.row].temp.min)°C"
+            cell.forecastMaxTemp.text = "Max: \(self.NextSevenDaysData[indexPath.row].temp.max)°C"
+            cell.forecastMinTemp.text = "Min: \(self.NextSevenDaysData[indexPath.row].temp.min)°C"
             
         }
         

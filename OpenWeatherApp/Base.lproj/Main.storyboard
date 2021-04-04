@@ -312,7 +312,6 @@
                                                     </subviews>
                                                 </stackView>
                                             </subviews>
-                                            <color key="backgroundColor" systemColor="opaqueSeparatorColor"/>
                                             <constraints>
                                                 <constraint firstItem="Uy7-qO-1ho" firstAttribute="top" secondItem="zDT-F4-ySh" secondAttribute="top" constant="10" id="A6L-si-r4t"/>
                                                 <constraint firstItem="Uy7-qO-1ho" firstAttribute="leading" secondItem="zDT-F4-ySh" secondAttribute="leading" constant="10" id="FDR-DF-P3l"/>

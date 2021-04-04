@@ -151,6 +151,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate {
         // Now Stop the Spinner
         DispatchQueue.main.async {
             self.spinner.stopAnimating()
+            self.view.backgroundColor = UIColor.white
 //            print("In Dispathch",self.CurrentDayData)
 //            self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
 //            self.presentDayTemp.text = "\(self.CurrentDayData.temp)"
