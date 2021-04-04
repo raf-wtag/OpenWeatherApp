@@ -35,12 +35,14 @@ extension Int {
     func  fromUnixTimeToTimeNDate() -> String {
         let date = Date(timeIntervalSince1970: TimeInterval(self))
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM d, h:mm a"
+        dateFormatter.dateFormat = "MMM d, h:mm:ss a"
         if let retData = dateFormatter.string(for: date) {
             return retData
         }
         return ""
     }
+    
+    
     
     
 }
