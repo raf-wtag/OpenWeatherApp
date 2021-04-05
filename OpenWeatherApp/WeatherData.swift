@@ -78,7 +78,7 @@ struct SecretKeysMap: Codable {
 }
 
 struct Current: Codable {
-    let dt : Int
+    var dt : Int
     let sunrise : Int
     let sunset : Int
     let temp : Double // Error

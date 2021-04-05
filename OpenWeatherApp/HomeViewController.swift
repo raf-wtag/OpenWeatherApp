@@ -37,6 +37,8 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     var CurrentDayData = Current(dt: 0, sunrise: 0, sunset: 0, temp: 0.0, feels_like: 0.0, weather: [])
     var HourlyData = [Hourly]()
     
+    var timer = Timer()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -134,7 +136,11 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             
             DispatchQueue.main.async {
                 print("In Dispathch",self.CurrentDayData)
-                self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
+                
+                // MARK: - Dynamic time representation afetr fetching data from API
+                self.getCurrentTime()
+                
+//                self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
                 self.presentDayTemp.text = "\(self.CurrentDayData.temp)°C"
                 let url = URL(string: "https://openweathermap.org/img/wn/" + self.CurrentDayData.weather[0].icon + ".png")
                 self.presentDayWeatherIcon.imageLoad(from: url!)
@@ -278,6 +284,23 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
             return CGSize(width: view.frame.width, height: 200)
+    }
+    
+    // MARK: - Dynamic Time Display
+    func getCurrentTime() {
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.currentTimeAfterFetchedTime), userInfo: nil, repeats: true)
+    }
+    
+    @objc func currentTimeAfterFetchedTime(currentTime : Int) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, h:mm:ss a"
+//        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+//        formatter.timeZone = TimeZone.current
+        DispatchQueue.main.async {
+            self.presentDayDateNTime.text = formatter.string(from: Date(timeIntervalSince1970: TimeInterval(self.CurrentDayData.dt)))
+            self.CurrentDayData.dt += 1
+            print(Date(timeIntervalSince1970: TimeInterval(self.CurrentDayData.dt)))
+        }
     }
     
 }
