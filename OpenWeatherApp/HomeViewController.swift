@@ -38,6 +38,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     var HourlyData = [Hourly]()
     
     var timer = Timer()
+    var dynamicCurrentDateNTime = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -138,6 +139,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
                 print("In Dispathch",self.CurrentDayData)
                 
                 // MARK: - Dynamic time representation afetr fetching data from API
+                self.dynamicCurrentDateNTime = self.CurrentDayData.dt
                 self.getCurrentTime()
                 
 //                self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
@@ -297,8 +299,8 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
 //        formatter.timeZone = TimeZone(secondsFromGMT: 0)
 //        formatter.timeZone = TimeZone.current
         DispatchQueue.main.async {
-            self.presentDayDateNTime.text = formatter.string(from: Date(timeIntervalSince1970: TimeInterval(self.CurrentDayData.dt)))
-            self.CurrentDayData.dt += 1
+            self.presentDayDateNTime.text = formatter.string(from: Date(timeIntervalSince1970: TimeInterval(self.dynamicCurrentDateNTime)))
+            self.dynamicCurrentDateNTime += 1
             print(Date(timeIntervalSince1970: TimeInterval(self.CurrentDayData.dt)))
         }
     }
