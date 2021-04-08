@@ -14,7 +14,7 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
 //    var latitude = 0.0
 //    var longitude = 0.0
     
-    var NextSevenDaysData = [Daily]()
+    var nextSevenDaysData = [Daily]()
     
     var iconImage: UIImage? = nil
     
@@ -34,7 +34,7 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return NextSevenDaysData.count
+        return nextSevenDaysData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -42,15 +42,15 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
         let cell = tableView.dequeueReusableCell(withIdentifier: "table_cell") as! CustomTableViewCell
         
         if indexPath.row <= 6 {
-            cell.forecastDate.text = "\(self.NextSevenDaysData[indexPath.row].dt.fromUnixTimeToDate())"
+            cell.forecastDate.text = "\(self.nextSevenDaysData[indexPath.row].dt.fromUnixTimeToDate())"
 //            cell.forecastSunriseTime.text = "Sunrise: " + self.NextSevenDaysData[indexPath.row].sunrise.fromUnixTimeToTime()
 //            cell.forecastSunsetTime.text = "Sunset: " + self.NextSevenDaysData[indexPath.row].sunset.fromUnixTimeToTime()
 //            cell.forecastWeatherIcon.image = UIImage(named: self.NextSevenDaysData[indexPath.row].weather[0].icon)
-            let url = URL(string: "https://openweathermap.org/img/wn/" + self.NextSevenDaysData[indexPath.row].weather[0].icon + ".png")
+            let url = URL(string: "https://openweathermap.org/img/wn/" + self.nextSevenDaysData[indexPath.row].weather[0].icon + ".png")
             cell.forecastWeatherIcon.imageLoad(from: url!)
-            cell.forecastWeatherDescription.text = "" + self.NextSevenDaysData[indexPath.row].weather[0].description.capitalized
-            cell.forecastMaxTemp.text = "Max: \(self.NextSevenDaysData[indexPath.row].temp.max)°C"
-            cell.forecastMinTemp.text = "Min: \(self.NextSevenDaysData[indexPath.row].temp.min)°C"
+            cell.forecastWeatherDescription.text = "" + self.nextSevenDaysData[indexPath.row].weather[0].description.capitalized
+            cell.forecastMaxTemp.text = "Max: \(self.nextSevenDaysData[indexPath.row].temp.max)°C"
+            cell.forecastMinTemp.text = "Min: \(self.nextSevenDaysData[indexPath.row].temp.min)°C"
             
         }
         
