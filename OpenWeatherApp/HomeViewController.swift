@@ -71,7 +71,22 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         
         // Define CollectionViewDataSource
         collection_View.dataSource = self
+        
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(appCurrentlyInBackgroundState), name: UIApplication.willResignActiveNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(appCurrentlyInForegroundState), name: UIApplication.willEnterForegroundNotification, object: nil)
 
+    }
+    
+    @objc func appCurrentlyInBackgroundState() {
+        print("About to go in background")
+        timer.invalidate()
+    }
+    
+    @objc func appCurrentlyInForegroundState() {
+        print("In foreground")
+        fetchCurrentLocation()
     }
     
 //    override func viewDidAppear(_ animated: Bool) {
