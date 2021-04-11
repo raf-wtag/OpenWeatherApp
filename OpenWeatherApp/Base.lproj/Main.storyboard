@@ -201,6 +201,11 @@
                     </view>
                     <navigationItem key="navigationItem" title="Weather" id="jkR-bu-EyZ">
                         <barButtonItem key="backBarButtonItem" title="Back" id="WoA-EH-UfN"/>
+                        <barButtonItem key="leftBarButtonItem" image="magnifyingglass" catalog="system" id="sjX-29-kXf">
+                            <connections>
+                                <segue destination="AIv-oW-aAv" kind="show" id="S70-K7-mLc"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Weekly" id="8Du-rA-5bQ">
                             <connections>
                                 <segue destination="n4a-th-mre" kind="show" id="OgT-cs-foY"/>
@@ -222,7 +227,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1050.7246376811595" y="79.6875"/>
+            <point key="canvasLocation" x="1068" y="80"/>
         </scene>
         <!--Weekly Data View Controller-->
         <scene sceneID="G6l-sZ-Pc6">
@@ -350,7 +355,42 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WhS-W0-KKF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1826.0869565217392" y="79.6875"/>
+            <point key="canvasLocation" x="2242" y="-348"/>
+        </scene>
+        <!--Search City Name View Controller-->
+        <scene sceneID="ifs-Ex-bxk">
+            <objects>
+                <viewController id="AIv-oW-aAv" customClass="SearchCityNameViewController" customModule="OpenWeatherApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="083-XH-P6v">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <searchBar contentMode="redraw" showsCancelButton="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bbr-1y-4OS">
+                                <rect key="frame" x="0.0" y="88" width="414" height="56"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </searchBar>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="xeC-eo-nPE">
+                                <rect key="frame" x="0.0" y="144" width="414" height="718"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Fnn-jh-lxi"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="xeC-eo-nPE" firstAttribute="top" secondItem="bbr-1y-4OS" secondAttribute="bottom" id="79g-Nu-V2v"/>
+                            <constraint firstItem="xeC-eo-nPE" firstAttribute="leading" secondItem="Fnn-jh-lxi" secondAttribute="leading" id="9U4-eH-xng"/>
+                            <constraint firstItem="bbr-1y-4OS" firstAttribute="trailing" secondItem="Fnn-jh-lxi" secondAttribute="trailing" id="NhT-jx-lyq"/>
+                            <constraint firstItem="Fnn-jh-lxi" firstAttribute="bottom" secondItem="xeC-eo-nPE" secondAttribute="bottom" id="SHE-5O-3ZW"/>
+                            <constraint firstItem="bbr-1y-4OS" firstAttribute="leading" secondItem="Fnn-jh-lxi" secondAttribute="leading" id="SzC-O5-TJC"/>
+                            <constraint firstItem="Fnn-jh-lxi" firstAttribute="trailing" secondItem="xeC-eo-nPE" secondAttribute="trailing" id="ZDd-Mw-MT4"/>
+                            <constraint firstItem="bbr-1y-4OS" firstAttribute="top" secondItem="Fnn-jh-lxi" secondAttribute="top" id="im4-zF-GYr"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="wAg-9o-oyy"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="C3b-RQ-n2D" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2241" y="384"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="1kE-rU-P7T">
@@ -372,6 +412,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="magnifyingglass" catalog="system" width="128" height="115"/>
         <systemColor name="opaqueSeparatorColor">
             <color red="0.77647058823529413" green="0.77647058823529413" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
