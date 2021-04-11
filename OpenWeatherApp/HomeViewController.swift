@@ -190,7 +190,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
                 
                 // MARK: Other labels
 //                self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
-                self.presentDayTemp.text = "\(self.currentDayData.temp)°C"
+                self.presentDayTemp.text = "\(self.currentDayData.temp)°"
                 let url = URL(string: "https://openweathermap.org/img/wn/" + self.currentDayData.weather[0].icon + ".png")
                 self.presentDayWeatherIcon.imageLoad(from: url!)
 //                self.presentDayWeatherIcon.image = UIImage(named: self.CurrentDayData.weather[0].icon)
