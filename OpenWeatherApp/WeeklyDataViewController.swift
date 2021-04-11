@@ -24,6 +24,8 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
         // Declare the dataSource and Delegates
         tableView.dataSource = self
         tableView.delegate = self
+        // Add Background Image In the tableView
+        tableView.backgroundView = UIImageView(image: UIImage(named: "background.jpeg"))
     }
     
     

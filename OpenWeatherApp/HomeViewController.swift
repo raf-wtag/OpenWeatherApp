@@ -59,6 +59,9 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Add BackgroundImage in The HomeView
+        self.view.backgroundColor = UIColor(patternImage: UIImage(named: "background.jpeg")!)
+        
         // Load API Key from Key.json File -> "APIKEY" : "secretkey"
         if let apiData = self.readSecretKeyFile(forFileName: "Keys") {
             if let temp = self.parseSecretKeyFile(jsonData: apiData) {
@@ -72,7 +75,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         // Define CollectionViewDataSource
         collection_View.dataSource = self
         
-        
+        // Obbserver to observe app comes foreground and apps goes to background Notification
         NotificationCenter.default.addObserver(self, selector: #selector(appCurrentlyInBackgroundState), name: UIApplication.willResignActiveNotification, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(appCurrentlyInForegroundState), name: UIApplication.willEnterForegroundNotification, object: nil)
@@ -202,7 +205,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
                 // All data are set to go so its time to stop the spinner
                 self.spinner.stopAnimating()
                 // Change the background color of the viewcontroller
-                self.view.backgroundColor = UIColor.white
+//                self.view.backgroundColor = UIColor.white
             }
         })
         
@@ -350,7 +353,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-            return CGSize(width: view.frame.width, height: 200)
+            return CGSize(width: view.frame.width, height: 180)
     }
     
     // MARK: - Real Time Clock Display
