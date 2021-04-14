@@ -74,7 +74,8 @@ struct Weather: Codable {
 }
 
 struct SecretKeysMap: Codable {
-    let APIKEY: String
+    let APIKEY_OPENWEATHERMAP: String
+    let APIKEY_MAPBOX: String
 }
 
 struct Current: Codable {

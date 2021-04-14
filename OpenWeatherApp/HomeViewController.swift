@@ -255,8 +255,8 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     private func parseSecretKeyFile(jsonData: Data) -> String? {
         do {
             let decodedSecretKeys = try JSONDecoder().decode(SecretKeysMap.self, from: jsonData)
-            print("API key is", decodedSecretKeys.APIKEY)
-            return decodedSecretKeys.APIKEY
+            print("API key is", decodedSecretKeys.APIKEY_OPENWEATHERMAP)
+            return decodedSecretKeys.APIKEY_OPENWEATHERMAP
         } catch {
             print("Hey!! Error in Decoding!!")
         }
