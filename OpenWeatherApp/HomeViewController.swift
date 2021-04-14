@@ -55,6 +55,11 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     // Temporary variable to store and update the current time which is feteched from the API response
     var dynamicCurrentDateNTime = 0
     
+    static var userSelectedPlacesLatitude: Double = 0
+    static var userSelectedPlacesLongitude: Double = 0
+    
+    static var reloadWeatherDataStatus = false
+    
     // MARK: viewControllerLifeCycle Method <ViewDidLoad>
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -92,13 +97,17 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         fetchCurrentLocation()
     }
     
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//
-//        // Again Check for location permission and similar stuffs
-//        fetchCurrentLocation()
-//
-//    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // Here as we get the userSelectedPlaceLocation fetchAPIData() will be called Here
+        if HomeViewController.reloadWeatherDataStatus {
+            print("In viewDidAppear", HomeViewController.userSelectedPlacesLongitude, HomeViewController.userSelectedPlacesLatitude)
+            print("Lat: ", HomeViewController.userSelectedPlacesLatitude)
+            print("Lon: ", HomeViewController.userSelectedPlacesLongitude)
+//            sleep(30)
+        }
+    }
     
     // MARK: - Location Part
     func fetchCurrentLocation() {
@@ -372,5 +381,8 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             print(Date(timeIntervalSince1970: TimeInterval(self.dynamicCurrentDateNTime)))
         }
     }
+    
+    // Marker to Identify this VC can be used as a unwind segue destination
+    @IBAction func unwindToHomeViewController(_ sender: UIStoryboardSegue) {}
     
 }

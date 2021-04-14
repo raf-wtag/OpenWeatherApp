@@ -165,9 +165,26 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        userSelectedPlacesLatitude = suggestedPlacenames[indexPath.row].geometry.coordinates[1]
-        userSelectedPlacesLongitude = suggestedPlacenames[indexPath.row].geometry.coordinates[0]
-        print(userSelectedPlacesLatitude, userSelectedPlacesLongitude)
+        
+        self.userSelectedPlacesLatitude = suggestedPlacenames[indexPath.row].geometry.coordinates[1]
+        HomeViewController.userSelectedPlacesLatitude = self.userSelectedPlacesLatitude
+        
+        self.userSelectedPlacesLongitude = suggestedPlacenames[indexPath.row].geometry.coordinates[0]
+        HomeViewController.userSelectedPlacesLongitude = self.userSelectedPlacesLongitude
+        
+        HomeViewController.reloadWeatherDataStatus = true
+        
+//        print("In didSelectRowAt", userSelectedPlacesLatitude, userSelectedPlacesLongitude)
+        self.performSegue(withIdentifier: "unwindSegue", sender: self)
     }
+    
+    
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        let destinationVC = segue.destination as! HomeViewController
+//        print("In Segue preperation",userSelectedPlacesLatitude, userSelectedPlacesLongitude)
+//        destinationVC.userSelectedPlacesLatitude = self.userSelectedPlacesLatitude
+//        destinationVC.userSelectedPlacesLongitude = self.userSelectedPlacesLongitude
+//        destinationVC.reloadWeatherDataStatus = true
+//    }
 
 }
