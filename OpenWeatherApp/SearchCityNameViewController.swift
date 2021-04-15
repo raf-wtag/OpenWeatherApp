@@ -194,6 +194,8 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
         
         HomeViewController.reloadWeatherDataStatusFlag = true
         
+        HomeViewController.userSelectedPlaceName = self.suggestedPlacenames[indexPath.row].place_name ?? "Error"
+        
 //        print("In didSelectRowAt", userSelectedPlacesLatitude, userSelectedPlacesLongitude)
         self.performSegue(withIdentifier: "unwindSegue", sender: self)
     }

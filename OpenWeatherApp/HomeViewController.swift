@@ -62,6 +62,9 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     static var userSelectedPlacesLatitude: Double = 0
     static var userSelectedPlacesLongitude: Double = 0
     
+    // To display the location Name
+    static var userSelectedPlaceName = ""
+    
     // Flag if user selects a location or not
     static var reloadWeatherDataStatusFlag = false
     
@@ -285,6 +288,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             self.presentDaySunsetTime.text = "Sunset: " + self.currentDayData.sunset.fromUnixTimeToTime()
             self.presentDayFeels.text = "Feels like: \(self.currentDayData.feels_like)°C"
             self.presentdayWeatherDescription.text = self.currentDayData.weather[0].description.capitalized
+            self.locationNameLabel.text = HomeViewController.userSelectedPlaceName
             
             // As we have data updated so we have to reload to display in the collectionview
             self.collection_View.reloadData()
