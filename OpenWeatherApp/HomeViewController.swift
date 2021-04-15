@@ -25,7 +25,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     
     // MARK: Class Variables
     // Declare CLLocationmanager type variables to manage location data
-    var locationManager: CLLocationManager?
+    var locationManager = CLLocationManager()
     
     // Access uisng: currentLocation?.coordinate.latitude || currentLocation?.coordinate.longitude
     var currentLocation: CLLocation?
@@ -83,7 +83,8 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         }
 
         // Access the device location and if successful then call API
-        fetchCurrentLocation()
+//        fetchCurrentLocation()
+        checkLocationServies()
         
         // Define CollectionViewDataSource
         collection_View.dataSource = self
@@ -150,40 +151,56 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     
     // MARK: - Location Part
     
+    // Check the current status of the Location Service of the device
+    func checkLocationServies() {
+        if CLLocationManager.locationServicesEnabled() {
+            setupLocationManager()
+            checkLocationAuthorization()
+        } else {
+            // add a Alart to tell user to turn on the location service
+        }
+    }
+    
+    // setup Location Manager
+    func setupLocationManager() {
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+    }
+    
+    // check what permission user give to this application
+    func checkLocationAuthorization() {
+        switch CLLocationManager.authorizationStatus() {
+        case .authorizedWhenInUse:
+            locationManager.requestLocation()
+            break
+        case .denied:
+            // Show alart to how to trun on permission
+            break
+        case .notDetermined:
+            locationManager.requestWhenInUseAuthorization()
+            break
+        case .restricted:
+            // Show alart to letting them know about restriction
+            break
+        case .authorizedAlways:
+            print("This is not needed for this Application")
+            break
+        default:
+            break
+        }
+    }
+    
     // Start Location fetch
     func fetchCurrentLocation() {
-        // create CLLocationmanager object to fetch location
-        locationManager = CLLocationManager()
-        
-        // Declare the delegates
-        locationManager?.delegate = self
-        
+
         // Ask user for location permission
-        locationManager?.requestAlwaysAuthorization()
+        locationManager.requestAlwaysAuthorization()
     }
 
-    // For CLLocationManagerDelegate, we have to define 3 core methods
-    // Check if User Permits Access or Not
+    // CLLocationManagerDelegate, we have to define 3 core methods
+    // Everytime Authorization status changes this is being called
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        
-        // User Permitted, Now Access Location
-        if status == .authorizedAlways || status == .authorizedWhenInUse {
-            locationManager?.requestLocation()
-        }
-        // Check if user not permitted then Show a alert to guide
-        else {
-            print("User Not Permitted", status)
-            // Create new Alert
-            let dialogMessage = UIAlertController(title: "Permission Not Given", message: "Please Go to Settings -> Privacy -> Location Services -> Click on OpenWeatherApp -> Allow Location Access (While using The App/Always)", preferredStyle: .alert)
-            // Create a button to close Alert
-            let okButtonOnAlert = UIAlertAction(title: "OK", style: .default, handler: {(action) -> () in
-                print("Alert Ok Button Tapped")
-            })
-            // Add created ok button on the Alert
-            dialogMessage.addAction(okButtonOnAlert)
-            // Now Present the Alert to the user
-            self.present(dialogMessage, animated: true, completion: nil)
-        }
+        checkLocationAuthorization()
     }
     
     // Access Location
@@ -220,6 +237,13 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         // Add created button to the alert
         dialogMessage.addAction(okButtonInAlert)
         // Present alert to the user
+        self.present(dialogMessage, animated: true, completion: nil)
+    }
+    
+    func diplayAlertWithButton(dialogTitle title: String, dialogMessage message: String, buttonTitle name: String) {
+        let dialogMessage = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okButtonInAlert = UIAlertAction(title: name, style: .default, handler: nil)
+        dialogMessage.addAction(okButtonInAlert)
         self.present(dialogMessage, animated: true, completion: nil)
     }
     
@@ -446,7 +470,9 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     // Observer Action for coming back to foreground state
     @objc func appWillEnterInForegroundState() {
         print("In foreground")
-        fetchCurrentLocation()
+//        fetchCurrentLocation()
+        timer.invalidate()
+        checkLocationServies()
     }
     
     // MARK: Segue Part. From here we pass the data to the other view
