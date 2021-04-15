@@ -9,27 +9,35 @@ import UIKit
 
 class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
+    // MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
     
+    // Class variables
 //    var latitude = 0.0
 //    var longitude = 0.0
     
+    // list to show next seven days forecast
     var nextSevenDaysData = [Daily]()
     
+    // Icon for tableview cell
     var iconImage: UIImage? = nil
     
+    // MARK: viewDidLoad()
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Declare the dataSource and Delegates
         tableView.dataSource = self
         tableView.delegate = self
+        
         // Add Background Image In the tableView
         tableView.backgroundView = UIImageView(image: UIImage(named: "background.jpeg"))
+        
     }
     
     
     // MARK: TableView Part
+    
     // Core Methods of TableView
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1

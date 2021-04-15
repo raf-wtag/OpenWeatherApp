@@ -12,4 +12,5 @@ class CustomCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var forecastHourlyTemp: UILabel!
     @IBOutlet weak var forecastHourlyWeatherIcon: UIImageView!
     @IBOutlet weak var forecastHourlyTime: UILabel!
+    
 }

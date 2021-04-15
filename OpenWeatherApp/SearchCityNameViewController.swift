@@ -9,9 +9,11 @@ import UIKit
 
 class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource {
 
+    // MARK: Outlets
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
+    // MARK: Class Variables
     var isSearchActive = false
     var mapbox_api = "https://api.mapbox.com/geocoding/v5/mapbox.places/"
     var mapbox_access_token = ""
@@ -20,6 +22,7 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
     var userSelectedPlacesLatitude: Double = 0
     var userSelectedPlacesLongitude: Double = 0
     
+    // MARK: viewDidLoad()
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -39,7 +42,9 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
        
     }
     
-    // MARK: Parse secret API key from Keys.json
+    // MARK: GET MapBox APIKEY From External File
+    
+    // Read the Keys.json file
     private func readSecretKeyFromFile(forFileName name: String) -> Data? {
         do {
             if let bundlePath = Bundle.main.path(forResource: name, ofType: "json"), let jsonData = try String(contentsOfFile: bundlePath).data(using: .utf8) {
@@ -51,6 +56,7 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
         return nil
     }
     
+    // Decode the Key from json
     private func parseSecretKeyFile(jsonData: Data) -> String? {
         do {
             let decodedSecretKeys = try JSONDecoder().decode(SecretKeysMap.self, from: jsonData)
@@ -63,6 +69,8 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
     }
     
     // MARK: SearchBar Delegate Functions
+    
+    // Delegate Functions
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         self.view.endEditing(true)
     }
@@ -80,16 +88,6 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
         self.searchBar.setShowsCancelButton(false, animated: true)
     }
     
-    func cancelSearching() {
-        isSearchActive = false
-        self.searchBar.resignFirstResponder()
-        self.searchBar.text = ""
-        suggestedPlacenames = []
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
-    }
-    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.searchPlacesSuggestion), object: nil)
         
@@ -102,10 +100,23 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
         }
     }
     
+    func cancelSearching() {
+        isSearchActive = false
+        self.searchBar.resignFirstResponder()
+        self.searchBar.text = ""
+        suggestedPlacenames = []
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
     @objc func searchPlacesSuggestion() {
         if let userTypedName = searchBar.text {
             if(!userTypedName.isEmpty) {
-                self.doShowSuggestion(usersQuery: userTypedName)
+                // trim whitespaces from input
+                let trimmedUserTypedName = userTypedName.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                self.doShowSuggestion(usersQuery: trimmedUserTypedName)
             }
         } else {
             print("Error in searchPlacesSuggestion()")
@@ -116,35 +127,44 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
         
         let urlString = "\(mapbox_api)\(usersQuery).json?access_token=\(mapbox_access_token)"
         print(urlString)
+
+        guard let url = URL(string: urlString) else {
+            print("Error in URL() doShowSuggestion()")
+            return
+        }
         
-        let url = URL(string: urlString)
-        
-        let task = URLSession.shared.dataTask(with: url!) { (data, response, error) in
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             
             guard let data = data, error == nil else {
-                print("Error in URLSeesion")
+                print("Error Occured in Retrieving Data in doShowSuggestion()")
                 return
             }
             
+            // Prints Raw JSON response
 //            if let jsonData = try? JSONSerialization.jsonObject(with: data, options: []) {
 //                print(jsonData)
 //            }
 
-            if let result = try? JSONDecoder().decode(Response.self, from: data) {
+            do {
+                let result = try JSONDecoder().decode(Response.self, from: data)
                 self.suggestedPlacenames = result.features
+                
                 print(self.suggestedPlacenames)
                 print(self.suggestedPlacenames.count)
+                
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
                 }
-            } else {
-                print("Failed In Decoding")
+            } catch {
+                print("Error in Data Decoding in doShowSuggestion()", error)
             }
         }
         task.resume()
     }
     
-    // MARK: TableView Delegates Function
+    // MARK: TableView
+    
+    // TableView Delegates Function
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return suggestedPlacenames.count
     }
@@ -172,7 +192,7 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
         self.userSelectedPlacesLongitude = suggestedPlacenames[indexPath.row].geometry.coordinates[0]
         HomeViewController.userSelectedPlacesLongitude = self.userSelectedPlacesLongitude
         
-        HomeViewController.reloadWeatherDataStatus = true
+        HomeViewController.reloadWeatherDataStatusFlag = true
         
 //        print("In didSelectRowAt", userSelectedPlacesLatitude, userSelectedPlacesLongitude)
         self.performSegue(withIdentifier: "unwindSegue", sender: self)
