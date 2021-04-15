@@ -202,10 +202,13 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             print("CLLocationManager - Longitude: ", self.longitude)
         }
 
+        // Now call reverseGeocodeLocation
+        callReverseGeoCoder()
+        
         // As now we have location now lets Call fetchAPIData()
         callFetchAPIData()
     }
-
+    
     // Error Handling
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         // Check if error occured then present an alert to the user
@@ -218,6 +221,31 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         dialogMessage.addAction(okButtonInAlert)
         // Present alert to the user
         self.present(dialogMessage, animated: true, completion: nil)
+    }
+    
+    // This  will use reverseGeocodeLocation to determine the name of the place
+    private func callReverseGeoCoder() {
+        let geoCoder = CLGeocoder()
+        let userCurrentLocation = CLLocation(latitude: self.latitude, longitude: self.longitude     )
+        geoCoder.reverseGeocodeLocation(userCurrentLocation, completionHandler: { (placemarks, error) in
+            
+            if let _ = error {
+                return
+            }
+            
+            guard let placemark = placemarks?.first else {
+                return
+            }
+            
+            if let placeName = placemark.locality, let placeCountry =  placemark.country {
+                print(placeName)
+                HomeViewController.userSelectedPlaceName = "\(placeName), \(placeCountry)"
+            } else {
+                print("Error in callReverseGeoCoder()")
+            }
+            
+            
+        })
     }
     
     // MARK: - API Calling and Display
