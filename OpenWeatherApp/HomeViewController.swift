@@ -55,9 +55,13 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     // Temporary variable to store and update the current time which is feteched from the API response
     var dynamicCurrentDateNTime = 0
     
+    var timezoneIdentifier = ""
+    
+    // User selected place's Location coordinate
     static var userSelectedPlacesLatitude: Double = 0
     static var userSelectedPlacesLongitude: Double = 0
     
+    // Flag if user select a location or not
     static var reloadWeatherDataStatus = false
     
     // MARK: viewControllerLifeCycle Method <ViewDidLoad>
@@ -102,10 +106,70 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
 
         // Here as we get the userSelectedPlaceLocation fetchAPIData() will be called Here
         if HomeViewController.reloadWeatherDataStatus {
+            timer.invalidate()
             print("In viewDidAppear", HomeViewController.userSelectedPlacesLongitude, HomeViewController.userSelectedPlacesLatitude)
             print("Lat: ", HomeViewController.userSelectedPlacesLatitude)
             print("Lon: ", HomeViewController.userSelectedPlacesLongitude)
 //            sleep(30)
+            latitude = HomeViewController.userSelectedPlacesLatitude
+            longitude = HomeViewController.userSelectedPlacesLongitude
+
+            DispatchQueue.main.async {
+                self.spinner.startAnimating()
+            }
+            fetchAPIData(completionHandler: {
+                (weather, current, weeklydata, hourlydata) in
+                self.currentDayData = current
+                self.nextSevenDaysData = weeklydata
+                self.hourlyData = hourlydata
+                self.timezoneIdentifier = weather.timezone
+                
+                print("After Fetching we got -> ", self.currentDayData)
+                
+                // If the daily reposne from API is not empty then stores the first items in that array
+                // as persentDayData and the rest 7 days forecast are stored in the nextSevendaysdata
+                if !self.nextSevenDaysData.isEmpty {
+                    self.presentDayData = Array(self.nextSevenDaysData.prefix(1))
+    //                print("Now printing", self.PresentDayData)
+    //                print("Again Printing", self.PresentDayData[0].weather[0].description)
+                    self.nextSevenDaysData.removeFirst()
+                }
+                
+                // As API response gives 48 hours hourly data so we store only first 24 hours forecast data from that
+                if !self.hourlyData.isEmpty {
+                    print("Before Slicing", self.hourlyData.count)
+                    self.hourlyData = Array(self.hourlyData[0...23])
+                    print("After Slicing", self.hourlyData.count)
+                }
+                
+                // Now as we should have all data ready, its dispatch to the main queue to display data
+                DispatchQueue.main.async {
+                    print("In Dispathch",self.currentDayData)
+                    
+                    // MARK: - Dynamic time representation afetr fetching data from API
+                    self.dynamicCurrentDateNTime = self.currentDayData.dt
+                    self.getCurrentTime()
+                    
+                    // MARK: Other labels
+    //                self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
+                    self.presentDayTemp.text = "\(self.currentDayData.temp)°"
+                    let url = URL(string: "https://openweathermap.org/img/wn/" + self.currentDayData.weather[0].icon + ".png")
+                    self.presentDayWeatherIcon.imageLoad(from: url!)
+    //                self.presentDayWeatherIcon.image = UIImage(named: self.CurrentDayData.weather[0].icon)
+                    self.presentDaySunriseTime.text = "Sunrise: " + self.currentDayData.sunrise.fromUnixTimeToTime()
+                    self.presentDaySunsetTime.text = "Sunset: " + self.currentDayData.sunset.fromUnixTimeToTime()
+                    self.presentDayFeels.text = "Feels like: \(self.currentDayData.feels_like)°C"
+                    self.presentdayWeatherDescription.text = self.currentDayData.weather[0].description.capitalized
+                    
+                    // As we have data updated so we have to reload to display in the collectionview
+                    self.collection_View.reloadData()
+                    
+                    // All data are set to go so its time to stop the spinner
+                    self.spinner.stopAnimating()
+                    // Change the background color of the viewcontroller
+    //                self.view.backgroundColor = UIColor.white
+                }
+            })
         }
     }
     
@@ -166,10 +230,11 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         // MARK: API Calling
         // As now we have location now lets Call fetchAPIData() & Get Data from API Call
         fetchAPIData(completionHandler: {
-            (current, weeklydata, hourlydata) in
+            (weather, current, weeklydata, hourlydata) in
             self.currentDayData = current
             self.nextSevenDaysData = weeklydata
             self.hourlyData = hourlydata
+            self.timezoneIdentifier = weather.timezone
             
             print("After Fetching we got -> ", self.currentDayData)
             
@@ -274,7 +339,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     
     // MARK: Call & Fetch the API Data
     //Define the fetchAPIData() with completionHandler to get data after data being loaded
-    func fetchAPIData(completionHandler: @escaping (Current, [Daily], [Hourly]) -> ()) {
+    func fetchAPIData(completionHandler: @escaping (WeatherData, Current, [Daily], [Hourly]) -> ()) {
         
         // variables to return data to function caller
         var returnDailyData = [Daily]()
@@ -313,16 +378,16 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
                 print(jsonData)
             }
                     
-            let result = try? JSONDecoder().decode(WeatherData.self, from: data)
+            guard let result = try? JSONDecoder().decode(WeatherData.self, from: data) else { return }
             
             // If all Okey then return data by using completion Handler
-            if let res = result {
-                returnDailyData = res.daily
-                returnCurrentData = res.current
-                returnHourlyData = res.hourly
-            }
             
-            completionHandler(returnCurrentData, returnDailyData, returnHourlyData)
+            returnDailyData = result.daily
+            returnCurrentData = result.current
+            returnHourlyData = result.hourly
+
+            
+            completionHandler(result, returnCurrentData, returnDailyData, returnHourlyData)
         })
         task.resume()
         
@@ -374,7 +439,10 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d, h:mm:ss a"
 //        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-//        formatter.timeZone = TimeZone.current
+//        let offset = TimeZone.current.secondsFromGMT()
+//        print("Checking", offset)
+        formatter.timeZone = TimeZone(identifier: self.timezoneIdentifier)
+        
         DispatchQueue.main.async {
             self.presentDayDateNTime.text = formatter.string(from: Date(timeIntervalSince1970: TimeInterval(self.dynamicCurrentDateNTime)))
             self.dynamicCurrentDateNTime += 1
