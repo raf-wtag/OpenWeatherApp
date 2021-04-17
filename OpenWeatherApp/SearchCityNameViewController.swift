@@ -27,9 +27,10 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
         super.viewDidLoad()
 
         // Parse secret API key from Keys.json
-        if let rawAPIKeyData = self.readSecretKeyFromFile(forFileName: secretKeyContainFile) {
-            if let retrivedKey = self.parseSecretKeyFile(jsonData: rawAPIKeyData) {
-                mapbox_access_token = retrivedKey
+        let fileReader = FileReader()
+        if let apiData = fileReader.readSecretKeyFile(forFileName: "Keys") {
+            if let tempData = fileReader.parseSecretKeyFile(jsonData: apiData, keyFor: "mapBox") {
+                mapbox_access_token = tempData
             }
         }
         
@@ -40,32 +41,6 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
         tableView.delegate = self
         tableView.dataSource = self
        
-    }
-    
-    // MARK: GET MapBox APIKEY From External File
-    
-    // Read the Keys.json file
-    private func readSecretKeyFromFile(forFileName name: String) -> Data? {
-        do {
-            if let bundlePath = Bundle.main.path(forResource: name, ofType: "json"), let jsonData = try String(contentsOfFile: bundlePath).data(using: .utf8) {
-                return jsonData
-            }
-        } catch {
-            print("API KEY LOADING FAILED WITH ERROR", error)
-        }
-        return nil
-    }
-    
-    // Decode the Key from json
-    private func parseSecretKeyFile(jsonData: Data) -> String? {
-        do {
-            let decodedSecretKeys = try JSONDecoder().decode(SecretKeysMap.self, from: jsonData)
-            print("API key is", decodedSecretKeys.APIKEY_MAPBOX)
-            return decodedSecretKeys.APIKEY_MAPBOX
-        } catch {
-            print("Hey!! Error in Decoding!!")
-        }
-        return nil
     }
     
     // MARK: SearchBar Delegate Functions

@@ -35,7 +35,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     var longitude = 0.0
     
     // variable to to read API key from Keys.json
-    var secretAPIKEY = ""
+    var openWeatherMap_access_token = ""
     
     // NextSevenDaysData variable has 8 days reponse. But we discard today's data and stores next day's data
     var nextSevenDaysData = [Daily]()
@@ -76,9 +76,10 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         self.view.backgroundColor = UIColor(patternImage: UIImage(named: "background.jpeg")!)
         
         // Load API Key from Key.json File -> "APIKEY_OPENWEATHERMAP" : "secretkey"
-        if let apiData = self.readSecretKeyFile(forFileName: "Keys") {
-            if let temp = self.parseSecretKeyFile(jsonData: apiData) {
-                secretAPIKEY = temp
+        let fileReader = FileReader()
+        if let apiData = fileReader.readSecretKeyFile(forFileName: "Keys") {
+            if let tempData = fileReader.parseSecretKeyFile(jsonData: apiData, keyFor: "openweathermap") {
+                openWeatherMap_access_token = tempData
             }
         }
 
@@ -121,33 +122,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             callFetchAPIData()
         }
         
-    }
-    
-    // MARK: GET OPENWEATHERMAP APIKEY From External File
-    
-    // Read the Keys.json file
-    private func readSecretKeyFile(forFileName name: String) -> Data? {
-        do {
-            if let bundlePath = Bundle.main.path(forResource: name, ofType: "json"), let jsonData = try String(contentsOfFile: bundlePath).data(using: .utf8) {
-                return jsonData
-            }
-        } catch {
-            print("ERROR in readSecretKeyFile()", error)
-        }
-        return nil
-    }
-    
-    // Decode the Key from json
-    private func parseSecretKeyFile(jsonData: Data) -> String? {
-        do {
-            let decodedSecretKeys = try JSONDecoder().decode(SecretKeysMap.self, from: jsonData)
-            print("API key is", decodedSecretKeys.APIKEY_OPENWEATHERMAP)
-            return decodedSecretKeys.APIKEY_OPENWEATHERMAP
-        } catch {
-            print("Error in parseSecretKeyFile()", error)
-        }
-        return nil
-    }
+    }    
     
     // MARK: - Location Part
     
@@ -361,7 +336,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         let baseAddress = "https://api.openweathermap.org/data/2.5/onecall?"
         let lat = "lat=\(latitude)"
         let lon = "&lon=\(longitude)"
-        let openWeatherMapAPIKEY = "&appid=" + secretAPIKEY
+        let openWeatherMapAPIKEY = "&appid=" + openWeatherMap_access_token
         let excludesFromAPIresponse = "&exclude=minutely,alerts"
         let unitsOfDataFromAPIResponse = "&units=metric"
         
