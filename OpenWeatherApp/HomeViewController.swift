@@ -132,7 +132,8 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             setupLocationManager()
             checkLocationAuthorization()
         } else {
-            // add a Alart to tell user to turn on the location service
+            // Alart to tell user to turn on the location service
+            displayAlertWithButton(dialogTitle: "Turn on Location Services", dialogMessage: "Please Turn \"Location Services\" On From \"Settings -> Privacy -> Location Services -> Location Sevices\".", buttonTitle: "Close")
         }
     }
     
@@ -150,26 +151,17 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             break
         case .denied:
             // Show alart to how to trun on permission
-            break
+            displayAlertWithButton(dialogTitle: "Turn on Location Access For this App", dialogMessage: "Please Turn \"Location Access Permission\" On From \"Settings -> Privacy -> Location Services -> OpenWeatherApp -> While Using the App\".", buttonTitle: "OK")
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
-            break
         case .restricted:
-            // Show alart to letting them know about restriction
-            break
+           displayAlertWithButton(dialogTitle: "Restricted By User", dialogMessage: "This is possibly due to active restrictions such as parental controls being in place.", buttonTitle: "Close")
         case .authorizedAlways:
-            print("This is not needed for this Application")
-            break
+            // If user changes the authorization via Settings -> Privacy -> Location Services -> OpenWeatherApp -> While Using the App
+            locationManager.requestLocation()
         default:
-            break
+            print("Somting Wrong in checkLocationAuthorization()")
         }
-    }
-    
-    // Start Location fetch
-    func fetchCurrentLocation() {
-
-        // Ask user for location permission
-        locationManager.requestAlwaysAuthorization()
     }
 
     // CLLocationManagerDelegate, we have to define 3 core methods
@@ -205,17 +197,11 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         // Check if error occured then present an alert to the user
         print(error)
-        // Creates New alert
-        let dialogMessage = UIAlertController(title: "Error in Fetching Location", message: "Error Occured: \(error). Please Turn Your Location On the Settings -> Privacy -> Location Services", preferredStyle: .alert)
-        // Create a button for the alert cancel
-        let okButtonInAlert = UIAlertAction(title: "OK", style: .default, handler: nil)
-        // Add created button to the alert
-        dialogMessage.addAction(okButtonInAlert)
-        // Present alert to the user
-        self.present(dialogMessage, animated: true, completion: nil)
+        displayAlertWithButton(dialogTitle: "Error in Fetching Location", dialogMessage: "Error Occured: \(error). Please Check Your Location On the Settings -> Privacy -> Location Services", buttonTitle: "Close")
     }
     
-    func diplayAlertWithButton(dialogTitle title: String, dialogMessage message: String, buttonTitle name: String) {
+    // Alert creater function to show alert to the user
+    func displayAlertWithButton(dialogTitle title: String, dialogMessage message: String, buttonTitle name: String) {
         let dialogMessage = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okButtonInAlert = UIAlertAction(title: name, style: .default, handler: nil)
         dialogMessage.addAction(okButtonInAlert)
