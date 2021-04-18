@@ -8,7 +8,8 @@
 
     To run this code on Xcode you have to create a file "Keys.json" with this format -
     {
-        "APIKEY" : "<API Key>",
+        "APIKEY_OPENWEATHERMAP" : "<API Key From OpenWeatherMap>",
+        "APIKEY_MAPBOX" : "<Secret API Key From MapBox>",
     }
     You have to replace the <API Key> with openweathermap's onecall API
 
