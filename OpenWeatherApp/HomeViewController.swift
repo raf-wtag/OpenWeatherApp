@@ -20,11 +20,11 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     @IBOutlet weak var presentDaySunsetTime: UILabel!
     @IBOutlet weak var presentDayFeels: UILabel!
     @IBOutlet weak var presentdayWeatherDescription: UILabel!
-    @IBOutlet weak var weekForecastButton: UIButton!
     @IBOutlet weak var collection_View: UICollectionView!
     
     // MARK: Class Variables
-    // Declare CLLocationmanager type variables to manage location data
+    
+    // create CLLocationmanager object to manage location data
     var locationManager = CLLocationManager()
     
     // Access uisng: currentLocation?.coordinate.latitude || currentLocation?.coordinate.longitude
@@ -58,15 +58,8 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     // Timezone Identifier for calculating local time of any place
     var timezoneIdentifier = ""
     
-    // User selected place's Location coordinate
-    static var userSelectedPlacesLatitude: Double = 0
-    static var userSelectedPlacesLongitude: Double = 0
-    
     // To display the location Name
-    static var userSelectedPlaceName = ""
-    
-    // Flag if user selects a location or not
-    static var reloadWeatherDataStatusFlag = false
+    var locationName = ""
     
     // MARK: viewDidLoad()
     override func viewDidLoad() {
@@ -96,33 +89,6 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterInForegroundState), name: UIApplication.willEnterForegroundNotification, object: nil)
 
     }
-    
-    // MARK: ViewDidAppear()
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        // If user selects a Place in SearchCityNameViewController
-        if HomeViewController.reloadWeatherDataStatusFlag {
-            // As user select a place so stop the previous timer
-            timer.invalidate()
-            print("In viewDidAppear", HomeViewController.userSelectedPlacesLongitude, HomeViewController.userSelectedPlacesLatitude)
-            print("Lat: ", HomeViewController.userSelectedPlacesLatitude)
-            print("Lon: ", HomeViewController.userSelectedPlacesLongitude)
-//            sleep(30)
-            
-            // save the value to create the url of openweathermap api
-            latitude = HomeViewController.userSelectedPlacesLatitude
-            longitude = HomeViewController.userSelectedPlacesLongitude
-
-            DispatchQueue.main.async {
-                self.spinner.startAnimating()
-            }
-            
-            // Call the FetchAPIData()
-            callFetchAPIData()
-        }
-        
-    }    
     
     // MARK: - Location Part
     
@@ -224,7 +190,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             
             if let placeName = placemark.locality, let placeCountry =  placemark.country {
                 print(placeName)
-                HomeViewController.userSelectedPlaceName = "\(placeName), \(placeCountry)"
+                self.locationName = "\(placeName), \(placeCountry)"
             } else {
                 print("Error in callReverseGeoCoder()")
             }
@@ -301,7 +267,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             self.presentDaySunsetTime.text = "Sunset: " + self.currentDayData.sunset.fromUnixTimeToTime()
             self.presentDayFeels.text = "Feels like: \(self.currentDayData.feels_like)°C"
             self.presentdayWeatherDescription.text = self.currentDayData.weather[0].description.capitalized
-            self.locationNameLabel.text = HomeViewController.userSelectedPlaceName
+            self.locationNameLabel.text = self.locationName
             
             // As we have data updated so we have to reload to display in the collectionview
             self.collection_View.reloadData()
@@ -419,9 +385,26 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     }
     
     // MARK: Marker unwind segue destination
-    @IBAction func unwindToHomeViewController(_ sender: UIStoryboardSegue) {}
+    
+    @IBAction func unwindToHomeViewController(_ sender: UIStoryboardSegue) {
+        if let sourceVC = sender.source as? SearchCityNameViewController {
+            // store data in the variables
+            locationName = sourceVC.userSelectedPlacesname
+            latitude = sourceVC.userSelectedPlacesLatitude
+            longitude = sourceVC.userSelectedPlacesLongitude
+            
+            DispatchQueue.main.async {
+                self.spinner.startAnimating()
+            }
+
+            // Call the FetchAPIData()
+            timer.invalidate()
+            callFetchAPIData()
+        }
+    }
     
     // MARK: Notification Observer Action
+    
     // Observer Action for going to minimize state
     @objc func appWillEnterInBackgroundState() {
         print("About to go in background")
@@ -436,7 +419,8 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         checkLocationServies()
     }
     
-    // MARK: Segue Part. From here we pass the data to the other view
+    // MARK: Segue Part. From here we pass the data to the WeeklyDataViewController
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let nextViewController = segue.destination as? WeeklyDataViewController
         

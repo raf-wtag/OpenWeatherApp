@@ -454,7 +454,6 @@
                                         <connections>
                                             <outlet property="placeMarker" destination="IFI-oh-69w" id="utf-Br-Vdp"/>
                                             <outlet property="suggestedPlaceName" destination="m1M-6u-yNv" id="dp7-5H-UGf"/>
-                                            <segue destination="6QG-2A-RQc" kind="unwind" identifier="unwindSegue" unwindAction="unwindToHomeViewController:" id="zv3-xR-3by"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -476,6 +475,7 @@
                     <connections>
                         <outlet property="searchBar" destination="bbr-1y-4OS" id="wr3-yz-wfM"/>
                         <outlet property="tableView" destination="xeC-eo-nPE" id="kOf-Rh-tXZ"/>
+                        <segue destination="6QG-2A-RQc" kind="unwind" identifier="unwindSegue" unwindAction="unwindToHomeViewController:" id="C0e-fi-nAi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="C3b-RQ-n2D" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

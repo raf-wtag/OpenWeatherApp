@@ -21,6 +21,7 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
     var suggestedPlacenames = [Feature]()
     var userSelectedPlacesLatitude: Double = 0
     var userSelectedPlacesLongitude: Double = 0
+    var userSelectedPlacesname = ""
     
     // MARK: viewDidLoad()
     override func viewDidLoad() {
@@ -162,17 +163,12 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         self.userSelectedPlacesLatitude = suggestedPlacenames[indexPath.row].geometry.coordinates[1]
-        HomeViewController.userSelectedPlacesLatitude = self.userSelectedPlacesLatitude
-        
+
         self.userSelectedPlacesLongitude = suggestedPlacenames[indexPath.row].geometry.coordinates[0]
-        HomeViewController.userSelectedPlacesLongitude = self.userSelectedPlacesLongitude
+
+        self.userSelectedPlacesname = self.suggestedPlacenames[indexPath.row].place_name ?? "Error"
         
-        HomeViewController.reloadWeatherDataStatusFlag = true
-        
-        HomeViewController.userSelectedPlaceName = self.suggestedPlacenames[indexPath.row].place_name ?? "Error"
-        
-//        print("In didSelectRowAt", userSelectedPlacesLatitude, userSelectedPlacesLongitude)
-        self.performSegue(withIdentifier: "unwindSegue", sender: self)
+        performSegue(withIdentifier: "unwindSegue", sender: self)
     }
     
     
