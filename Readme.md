@@ -11,5 +11,4 @@
         "APIKEY_OPENWEATHERMAP" : "<API Key From OpenWeatherMap>",
         "APIKEY_MAPBOX" : "<Secret API Key From MapBox>",
     }
-    You have to replace the <API Key> with openweathermap's onecall API
 
