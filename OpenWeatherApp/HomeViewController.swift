@@ -61,6 +61,11 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     // To display the location Name
     var locationName = ""
     
+    let dateFormatter = DateFormatter()
+    var isAppEverWentInBackgroundState = false
+    var timeWhenAppWentInBackground = ""
+    var timeWhenAppComeInForeground = ""
+    
     // MARK: viewDidLoad()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -408,6 +413,10 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     // Observer Action for going to minimize state
     @objc func appWillEnterInBackgroundState() {
         print("About to go in background")
+        isAppEverWentInBackgroundState = true
+        dateFormatter.dateFormat = "h:mm:ss"
+        timeWhenAppWentInBackground = dateFormatter.string(from: Date())
+        print("Time now -> \(timeWhenAppWentInBackground)")
         timer.invalidate()
     }
     
@@ -416,7 +425,29 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         print("In foreground")
 //        fetchCurrentLocation()
         timer.invalidate()
-        checkLocationServies()
+//        checkLocationServies()
+        
+        dateFormatter.dateFormat = "h:mm:ss"
+        timeWhenAppComeInForeground = dateFormatter.string(from: Date())
+        
+        if let timeSpent = checkHowMuchTimeAppWasInBackground(), timeSpent >= 1.0 {
+            checkLocationServies()
+        }
+    }
+    
+    private func checkHowMuchTimeAppWasInBackground() -> Double? {
+        if isAppEverWentInBackgroundState {
+            guard let timeAtBackground = dateFormatter.date(from: timeWhenAppWentInBackground),
+                  let timeAtForeground = dateFormatter.date(from: timeWhenAppComeInForeground) else {
+                print("Error in time -> isAppEverWentInBackgroundState check")
+                return nil
+            }
+            let interval = timeAtForeground.timeIntervalSince(timeAtBackground)
+            let minute = interval / 60
+            print("after \(minute)")
+            return minute
+        }
+        return nil
     }
     
     // MARK: Segue Part. From here we pass the data to the WeeklyDataViewController
