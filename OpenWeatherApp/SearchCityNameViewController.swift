@@ -163,10 +163,13 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         self.userSelectedPlacesLatitude = suggestedPlacenames[indexPath.row].geometry.coordinates[1]
+        UserDefaults.standard.set(userSelectedPlacesLatitude, forKey: "userSelectedPlacesLatitudeValue")
 
         self.userSelectedPlacesLongitude = suggestedPlacenames[indexPath.row].geometry.coordinates[0]
+        UserDefaults.standard.set(userSelectedPlacesLongitude, forKey: "userSelectedPlacesLongitudeValue")
 
         self.userSelectedPlacesname = self.suggestedPlacenames[indexPath.row].place_name ?? "Error"
+        UserDefaults.standard.set(userSelectedPlacesname, forKey: "userSelectedPlacesnameValue")
         
         performSegue(withIdentifier: "unwindSegue", sender: self)
     }

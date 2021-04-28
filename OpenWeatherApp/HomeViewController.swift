@@ -80,19 +80,34 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
                 openWeatherMap_access_token = tempData
             }
         }
+        
+        if let userSearchedLocationName = UserDefaults.standard.string(forKey: "userSelectedPlacesnameValue") {
+            retriveSavedLocationData(for: userSearchedLocationName)
+        } else {
+            checkLocationServies()
+        }
 
         // Access the device location and if successful then call API
 //        fetchCurrentLocation()
-        checkLocationServies()
+//        checkLocationServies()
+        
+        // As now we have location now lets Call fetchAPIData()
+        callFetchAPIData()
         
         // Define CollectionViewDataSource
         collection_View.dataSource = self
-        
+        print("Am I printing?")
         // Obbserver to observe app comes foreground and apps goes to background Notification
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterInBackgroundState), name: UIApplication.willResignActiveNotification, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterInForegroundState), name: UIApplication.willEnterForegroundNotification, object: nil)
-
+        
+    }
+    
+    private func retriveSavedLocationData(for place: String) {
+        locationName = place
+        latitude = UserDefaults.standard.double(forKey: "userSelectedPlacesLatitudeValue")
+        longitude = UserDefaults.standard.double(forKey: "userSelectedPlacesLongitudeValue")
     }
     
     // MARK: - Location Part
@@ -160,8 +175,6 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         // Now call reverseGeocodeLocation
         callReverseGeoCoder()
         
-        // As now we have location now lets Call fetchAPIData()
-        callFetchAPIData()
     }
     
     // Error Handling
@@ -371,6 +384,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     
     // Display real time
     func getCurrentTime() {
+        timer.invalidate()
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.currentTimeAfterFetchedTime), userInfo: nil, repeats: true)
     }
     
@@ -392,20 +406,34 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     // MARK: Marker unwind segue destination
     
     @IBAction func unwindToHomeViewController(_ sender: UIStoryboardSegue) {
-        if let sourceVC = sender.source as? SearchCityNameViewController {
-            // store data in the variables
-            locationName = sourceVC.userSelectedPlacesname
-            latitude = sourceVC.userSelectedPlacesLatitude
-            longitude = sourceVC.userSelectedPlacesLongitude
-            
-            DispatchQueue.main.async {
-                self.spinner.startAnimating()
-            }
-
-            // Call the FetchAPIData()
-            timer.invalidate()
-            callFetchAPIData()
+        guard let userSearchedLocationName = UserDefaults.standard.string(forKey: "userSelectedPlacesnameValue") else {
+            print("Error in retriving data from userDefaults")
+            return
         }
+        
+        retriveSavedLocationData(for: userSearchedLocationName)
+        
+        DispatchQueue.main.async {
+            self.spinner.startAnimating()
+        }
+
+        // Call the FetchAPIData()
+        callFetchAPIData()
+        
+//        if let sourceVC = sender.source as? SearchCityNameViewController {
+//            // store data in the variables
+//            locationName = sourceVC.userSelectedPlacesname
+//            latitude = sourceVC.userSelectedPlacesLatitude
+//            longitude = sourceVC.userSelectedPlacesLongitude
+//
+//            DispatchQueue.main.async {
+//                self.spinner.startAnimating()
+//            }
+//
+//            // Call the FetchAPIData()
+//            timer.invalidate()
+//            callFetchAPIData()
+//        }
     }
     
     // MARK: Notification Observer Action
@@ -417,14 +445,14 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         dateFormatter.dateFormat = "h:mm:ss"
         timeWhenAppWentInBackground = dateFormatter.string(from: Date())
         print("Time now -> \(timeWhenAppWentInBackground)")
-        timer.invalidate()
+//        timer.invalidate()
     }
     
     // Observer Action for coming back to foreground state
     @objc func appWillEnterInForegroundState() {
         print("In foreground")
 //        fetchCurrentLocation()
-        timer.invalidate()
+//        timer.invalidate()
 //        checkLocationServies()
         
         dateFormatter.dateFormat = "h:mm:ss"
