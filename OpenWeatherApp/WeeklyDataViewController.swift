@@ -9,36 +9,27 @@ import UIKit
 
 class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    // MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
-    
-    // Class variables
+
 //    var latitude = 0.0
 //    var longitude = 0.0
-    
-    // list to show next seven days forecast
+
     var nextSevenDaysData = [Daily]()
-    
-    // Icon for tableview cell
+
     var iconImage: UIImage? = nil
     
-    // MARK: viewDidLoad()
+    // MARK:- viewDidLoad()
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Declare the dataSource and Delegates
         tableView.dataSource = self
         tableView.delegate = self
-        
-        // Add Background Image In the tableView
+
         tableView.backgroundView = UIImageView(image: UIImage(named: "background.jpeg"))
-        
     }
     
     
-    // MARK: TableView Part
-    
-    // Core Methods of TableView
+    // MARK:- TableView Part
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -61,18 +52,13 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
             cell.forecastWeatherDescription.text = "" + self.nextSevenDaysData[indexPath.row].weather[0].description.capitalized
             cell.forecastMaxTemp.text = "Max: \(self.nextSevenDaysData[indexPath.row].temp.max)°C"
             cell.forecastMinTemp.text = "Min: \(self.nextSevenDaysData[indexPath.row].temp.min)°C"
-            
         }
-        
-        // Alter background color for even - odd row
 //        cell.backgroundColor = indexPath.row % 2 == 0 ? .cyan : .lightGray
         
         return cell
-        
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 100
     }
-    
 }

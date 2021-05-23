@@ -11,7 +11,6 @@ import UIKit
 let imageCache = NSCache<AnyObject, AnyObject>()
 
 extension Int {
-
     func  fromUnixTimeToDate() -> String {
         let date = Date(timeIntervalSince1970: TimeInterval(self))
         let dateFormatter = DateFormatter()
@@ -32,23 +31,19 @@ extension Int {
         return ""
     }
     
-    func  fromUnixTimeToTimeNDate() -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(self))
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM d, h:mm:ss a"
-        if let retData = dateFormatter.string(for: date) {
-            return retData
-        }
-        return ""
-    }
-    
+//    func  fromUnixTimeToTimeNDate() -> String {
+//        let date = Date(timeIntervalSince1970: TimeInterval(self))
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "MMM d, h:mm:ss a"
+//        if let retData = dateFormatter.string(for: date) {
+//            return retData
+//        }
+//        return ""
+//    }
 }
 
-
 extension UIImageView {
-    
     func imageLoad(from url: URL) {
-        
         if let imageFromCache = imageCache.object(forKey: url as AnyObject) as? UIImage {
             print("Now Fetching From Cache")
             self.image =  imageFromCache
@@ -67,5 +62,4 @@ extension UIImageView {
             }
         }
     }
-    
 }

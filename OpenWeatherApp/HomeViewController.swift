@@ -10,7 +10,6 @@ import CoreLocation
 
 class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollectionViewDataSource {
 
-    // MARK: Outlets
     @IBOutlet weak var locationNameLabel: UILabel!
     @IBOutlet weak var spinner: UIActivityIndicatorView!
     @IBOutlet weak var presentDayDateNTime: UILabel!
@@ -22,58 +21,31 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     @IBOutlet weak var presentdayWeatherDescription: UILabel!
     @IBOutlet weak var collection_View: UICollectionView!
     
-    // MARK: Class Variables
-    
-    // create CLLocationmanager object to manage location data
+ 
     var locationManager = CLLocationManager()
-    
-    // Access uisng: currentLocation?.coordinate.latitude || currentLocation?.coordinate.longitude
     var currentLocation: CLLocation?
-    
-    // Variables to store lat and lon from "var currentLocation"
     var latitude = 0.0
     var longitude = 0.0
-    
-    // variable to to read API key from Keys.json
     var openWeatherMap_access_token = ""
-    
-    // NextSevenDaysData variable has 8 days reponse. But we discard today's data and stores next day's data
     var nextSevenDaysData = [Daily]()
-    
-    // Only present Day's Data
     var presentDayData = [Daily]()
-    
-    // Current Day's Info
     var currentDayData = Current(dt: 0, sunrise: 0, sunset: 0, temp: 0.0, feels_like: 0.0, weather: [])
-    
-    // Hourly data of 48 hours data fetched from API but stores only first 24 hours data
     var hourlyData = [Hourly]()
-    
-    // Timer object to create real time clock in the UI
     var timer = Timer()
-    
-    // Temporary variable to store and update the current time which is feteched from the API response
     var dynamicCurrentDateNTime = 0
-    
-    // Timezone Identifier for calculating local time of any place
     var timezoneIdentifier = ""
-    
-    // To display the location Name
     var locationName = ""
-    
     let dateFormatter = DateFormatter()
     var isAppEverWentInBackgroundState = false
     var timeWhenAppWentInBackground = ""
     var timeWhenAppComeInForeground = ""
     
-    // MARK: viewDidLoad()
+    // MARK:- viewDidLoad() Part
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Add BackgroundImage in The HomeView
         self.view.backgroundColor = UIColor(patternImage: UIImage(named: "background.jpeg")!)
         
-        // Load API Key from Key.json File -> "APIKEY_OPENWEATHERMAP" : "secretkey"
         let fileReader = FileReader()
         if let apiData = fileReader.readSecretKeyFile(forFileName: "Keys") {
             if let tempData = fileReader.parseSecretKeyFile(jsonData: apiData, keyFor: "openweathermap") {
@@ -87,21 +59,12 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             checkLocationServies()
         }
 
-        // Access the device location and if successful then call API
-//        fetchCurrentLocation()
-//        checkLocationServies()
-        
-        // As now we have location now lets Call fetchAPIData()
         callFetchAPIData()
         
-        // Define CollectionViewDataSource
         collection_View.dataSource = self
-        print("Am I printing?")
-        // Obbserver to observe app comes foreground and apps goes to background Notification
+
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterInBackgroundState), name: UIApplication.willResignActiveNotification, object: nil)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterInForegroundState), name: UIApplication.willEnterForegroundNotification, object: nil)
-        
     }
     
     private func retriveSavedLocationData(for place: String) {
@@ -110,56 +73,44 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         longitude = UserDefaults.standard.double(forKey: "userSelectedPlacesLongitudeValue")
     }
     
-    // MARK: - Location Part
-    
-    // Check the current status of the Location Service of the device
+    // MARK:- Location Feteching Part
     func checkLocationServies() {
         if CLLocationManager.locationServicesEnabled() {
             setupLocationManager()
             checkLocationAuthorization()
         } else {
-            // Alart to tell user to turn on the location service
             displayAlertWithButton(dialogTitle: "Turn on Location Services", dialogMessage: "Please Turn \"Location Services\" On From \"Settings -> Privacy -> Location Services -> Location Sevices\".", buttonTitle: "Close")
         }
     }
     
-    // setup Location Manager
     func setupLocationManager() {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
     }
-    
-    // check what permission user give to this application
+
     func checkLocationAuthorization() {
         switch CLLocationManager.authorizationStatus() {
         case .authorizedWhenInUse:
             locationManager.requestLocation()
             break
         case .denied:
-            // Show alart to how to trun on permission
-            displayAlertWithButton(dialogTitle: "Turn on Location Access For this App", dialogMessage: "Please Turn \"Location Access Permission\" On From \"Settings -> Privacy -> Location Services -> OpenWeatherApp -> While Using the App\".", buttonTitle: "OK")
+            displayAlertWithButton(dialogTitle: "Turn on Location Access For this App", dialogMessage: "Please Turn \"Location Access Permission\" On From \"Settings -> Privacy -> Location Services -> OpenWeatherApp -> While Using the App\".", buttonTitle: "Okay")
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
         case .restricted:
            displayAlertWithButton(dialogTitle: "Restricted By User", dialogMessage: "This is possibly due to active restrictions such as parental controls being in place.", buttonTitle: "Close")
         case .authorizedAlways:
-            // If user changes the authorization via Settings -> Privacy -> Location Services -> OpenWeatherApp -> While Using the App
             locationManager.requestLocation()
         default:
-            print("Somting Wrong in checkLocationAuthorization()")
+           displayAlertWithButton(dialogTitle: "Unknown Case!", dialogMessage: "This Permission is not handled in developing time.", buttonTitle: "Okay")
         }
     }
 
-    // CLLocationManagerDelegate, we have to define 3 core methods
-    // Everytime Authorization status changes this is being called
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         checkLocationAuthorization()
     }
     
-    // Access Location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
-        // save the last accessed location
         currentLocation = locations.last
         
         if let lat = currentLocation?.coordinate.latitude {
@@ -172,27 +123,21 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             print("CLLocationManager - Longitude: ", self.longitude)
         }
 
-        // Now call reverseGeocodeLocation
         callReverseGeoCoder()
-        
     }
     
-    // Error Handling
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        // Check if error occured then present an alert to the user
         print(error)
         displayAlertWithButton(dialogTitle: "Error in Fetching Location", dialogMessage: "Error Occured: \(error). Please Check Your Location On the Settings -> Privacy -> Location Services", buttonTitle: "Close")
     }
-    
-    // Alert creater function to show alert to the user
+
     func displayAlertWithButton(dialogTitle title: String, dialogMessage message: String, buttonTitle name: String) {
         let dialogMessage = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okButtonInAlert = UIAlertAction(title: name, style: .default, handler: nil)
         dialogMessage.addAction(okButtonInAlert)
         self.present(dialogMessage, animated: true, completion: nil)
     }
-    
-    // This  will use reverseGeocodeLocation to determine the name of the place
+
     private func callReverseGeoCoder() {
         let geoCoder = CLGeocoder()
         let userCurrentLocation = CLLocation(latitude: self.latitude, longitude: self.longitude     )
@@ -218,64 +163,40 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     }
     
     // MARK: - API Calling and Display
-    
-    // This will invoke fetchAPIData()
     private func callFetchAPIData() {
         fetchAPIData(completionHandler: { [self] (weather) in
-            
-            // Save data from response
+
             currentDayData = weather.current
             nextSevenDaysData = weather.daily
             hourlyData = weather.hourly
             timezoneIdentifier = weather.timezone
-            
-            // Change [daily] to display current and next seven days data
+
             modifyDailyDataFromAPIResponse()
-            
-            // Change [hourly] to display next 24 hours data
             modifyHourlyDataFromAPIResponse()
-            
-            // Now Dispatch all the data
             weatherForecastDataDisplay()
-            
         })
     }
-    
-    // This function modidify the daily data from API response
+
     private func modifyDailyDataFromAPIResponse() {
-        
-        // If the daily reposne from API is not empty then stores the first items in that array as persentDayData and the rest 7 days forecast are stored in the nextSevendaysdata
         if !self.nextSevenDaysData.isEmpty {
             self.presentDayData = Array(self.nextSevenDaysData.prefix(1))
             self.nextSevenDaysData.removeFirst()
         }
-        
     }
     
-    // This function modidify hourly data from API response
     private func modifyHourlyDataFromAPIResponse() {
-        
-        // If the hourly data is not empty then store the first 24 hours from the API response
         if !self.hourlyData.isEmpty {
             print("Before Slicing", self.hourlyData.count)
             self.hourlyData = Array(self.hourlyData[0...23])
             print("After Slicing", self.hourlyData.count)
         }
-        
     }
-    
-    // This function dispatch data in the HomeViewController After all data are ready
+
     private func weatherForecastDataDisplay() {
-        
-        // Now as we should have all data ready, its dispatch to the main queue to display data
         DispatchQueue.main.async {
             print("In Dispathch",self.currentDayData)
-            
-            // Dynamic time representation afetr fetching data from API
             self.dynamicCurrentDateNTime = self.currentDayData.dt
             self.getCurrentTime()
-            
-            // Other labels
 //                self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
             self.presentDayTemp.text = "\(self.currentDayData.temp)°"
             let url = URL(string: "https://openweathermap.org/img/wn/" + self.currentDayData.weather[0].icon + ".png")
@@ -287,22 +208,13 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             self.presentdayWeatherDescription.text = self.currentDayData.weather[0].description.capitalized
             self.locationNameLabel.text = self.locationName
             
-            // As we have data updated so we have to reload to display in the collectionview
             self.collection_View.reloadData()
-            
-            // All data are set to go so its time to stop the spinner
             self.spinner.stopAnimating()
-            
         }
-        
     }
     
-    // MARK: Define fetchAPIData()
-    
-    //Define the fetchAPIData() with completionHandler to get data after data being loaded
+    // MARK:- Define fetchAPIData()
     func fetchAPIData(completionHandler: @escaping (WeatherData) -> ()) {
-        
-        // Variables to construct api calling address
         let baseAddress = "https://api.openweathermap.org/data/2.5/onecall?"
         let lat = "lat=\(latitude)"
         let lon = "&lon=\(longitude)"
@@ -313,32 +225,26 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         print("Latitude in fetchAPIData()", latitude)
         print("Longitude in fetchAPIData()", longitude)
         
-        // construct url string
         let urlString = baseAddress + lat + lon + unitsOfDataFromAPIResponse + excludesFromAPIresponse + openWeatherMapAPIKEY
         
         print(urlString)
         
-        // Checks if the url string contains valid characters or not
         guard let url = URL(string: urlString) else {
-            print("Error In URL() in fetchAPIData()")
+            print("Error In URL construction in fetchAPIData()")
             return
         }
         
-        // Fetch Data Definition
         let task = URLSession.shared.dataTask(with: url, completionHandler: { (data, response, error) in
-            
-            // Checks if the data successfully received or not
+
             guard let data = data, error == nil else {
                 print("Error Occured in Retrieving Data in fetchAPIData()")
                 return
             }
             
-            // Prints Raw JSON response
             if let jsonData = try? JSONSerialization.jsonObject(with: data, options: []) {
                 print(jsonData)
             }
-               
-            // Decode the JSON and map it using codable protocol
+            
             do {
                 let result = try JSONDecoder().decode(WeatherData.self, from: data)
                 completionHandler(result)
@@ -346,14 +252,10 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
                 print("Error in Data Decoding in fetchAPIData()", error)
             }
         })
-        // Data fetching starts
         task.resume()
-
     }
     
-    // MARK: CollectionView
-    
-    // Declare the delegate functions of collectionview
+    // MARK:- CollectionView
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return hourlyData.count
     }
@@ -373,16 +275,14 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         }
 
         return cell
-        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
             return CGSize(width: view.frame.width, height: 180)
     }
     
-    // MARK: Real Time Clock Display
-    
-    // Display real time
+    // MARK:- Real Time Clock Display
+
     func getCurrentTime() {
         timer.invalidate()
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.currentTimeAfterFetchedTime), userInfo: nil, repeats: true)
@@ -403,8 +303,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         }
     }
     
-    // MARK: Marker unwind segue destination
-    
+    // MARK:- Unwind segue destination
     @IBAction func unwindToHomeViewController(_ sender: UIStoryboardSegue) {
         guard let userSearchedLocationName = UserDefaults.standard.string(forKey: "userSelectedPlacesnameValue") else {
             print("Error in retriving data from userDefaults")
@@ -416,8 +315,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         DispatchQueue.main.async {
             self.spinner.startAnimating()
         }
-
-        // Call the FetchAPIData()
+        
         callFetchAPIData()
         
 //        if let sourceVC = sender.source as? SearchCityNameViewController {
@@ -436,9 +334,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
 //        }
     }
     
-    // MARK: Notification Observer Action
-    
-    // Observer Action for going to minimize state
+    // MARK:- Notification Observer Action
     @objc func appWillEnterInBackgroundState() {
         print("About to go in background")
         isAppEverWentInBackgroundState = true
@@ -447,10 +343,8 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         print("Time now -> \(timeWhenAppWentInBackground)")
 //        timer.invalidate()
     }
-    
-    // Observer Action for coming back to foreground state
+
     @objc func appWillEnterInForegroundState() {
-        print("In foreground")
 //        fetchCurrentLocation()
 //        timer.invalidate()
 //        checkLocationServies()
@@ -478,8 +372,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         return nil
     }
     
-    // MARK: Segue Part. From here we pass the data to the WeeklyDataViewController
-    
+    // MARK:- Segue Part. From here we pass the data to the WeeklyDataViewController
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let nextViewController = segue.destination as? WeeklyDataViewController
         
@@ -489,5 +382,4 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             nextViewController?.nextSevenDaysData = self.nextSevenDaysData
         }
     }
-    
 }

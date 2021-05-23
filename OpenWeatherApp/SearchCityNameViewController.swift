@@ -9,11 +9,9 @@ import UIKit
 
 class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource {
 
-    // MARK: Outlets
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
-    
-    // MARK: Class Variables
+
     var isSearchActive = false
     var mapbox_api = "https://api.mapbox.com/geocoding/v5/mapbox.places/"
     var mapbox_access_token = ""
@@ -23,30 +21,24 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
     var userSelectedPlacesLongitude: Double = 0
     var userSelectedPlacesname = ""
     
-    // MARK: viewDidLoad()
+    // MARK:- viewDidLoad()
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Parse secret API key from Keys.json
         let fileReader = FileReader()
         if let apiData = fileReader.readSecretKeyFile(forFileName: "Keys") {
             if let tempData = fileReader.parseSecretKeyFile(jsonData: apiData, keyFor: "mapBox") {
                 mapbox_access_token = tempData
             }
         }
-        
-        // Declare this VC as a delegate of UISearchBar
+
         searchBar.delegate = self
-        
-        // Declare this VC as a delegate of UITableView
+
         tableView.delegate = self
         tableView.dataSource = self
-       
     }
     
-    // MARK: SearchBar Delegate Functions
-    
-    // Delegate Functions
+    // MARK:- SearchBar Delegate Functions
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         self.view.endEditing(true)
     }
@@ -89,9 +81,7 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
     @objc func searchPlacesSuggestion() {
         if let userTypedName = searchBar.text {
             if(!userTypedName.isEmpty) {
-                // trim whitespaces from input
                 let trimmedUserTypedName = userTypedName.trimmingCharacters(in: .whitespacesAndNewlines)
-                
                 self.doShowSuggestion(usersQuery: trimmedUserTypedName)
             }
         } else {
@@ -100,7 +90,6 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
     }
     
     func doShowSuggestion(usersQuery: String) {
-        
         let urlString = "\(mapbox_api)\(usersQuery).json?access_token=\(mapbox_access_token)"
         print(urlString)
 
@@ -110,13 +99,12 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
         }
         
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-            
             guard let data = data, error == nil else {
                 print("Error Occured in Retrieving Data in doShowSuggestion()")
                 return
             }
             
-            // Prints Raw JSON response
+//            // Prints Raw JSON response
 //            if let jsonData = try? JSONSerialization.jsonObject(with: data, options: []) {
 //                print(jsonData)
 //            }
@@ -138,9 +126,7 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
         task.resume()
     }
     
-    // MARK: TableView
-    
-    // TableView Delegates Function
+    // MARK:- TableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return suggestedPlacenames.count
     }
@@ -161,7 +147,6 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         self.userSelectedPlacesLatitude = suggestedPlacenames[indexPath.row].geometry.coordinates[1]
         UserDefaults.standard.set(userSelectedPlacesLatitude, forKey: "userSelectedPlacesLatitudeValue")
 
@@ -182,5 +167,4 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
 //        destinationVC.userSelectedPlacesLongitude = self.userSelectedPlacesLongitude
 //        destinationVC.reloadWeatherDataStatus = true
 //    }
-
 }

@@ -84,7 +84,7 @@ struct Current: Codable {
     var dt : Int
     let sunrise : Int
     let sunset : Int
-    let temp : Double // Error
+    let temp : Double 
     let feels_like : Double
     let weather : [Weather]
     
