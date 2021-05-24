@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB2F4E0D9663AF69B2166079 /* Pods_OpenWeatherApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A948C8BFEDA0218ADB76376 /* Pods_OpenWeatherApp.framework */; };
 		FF517CD82623629600F1B1EF /* Readme.md in Resources */ = {isa = PBXBuildFile; fileRef = FF517CD72623629600F1B1EF /* Readme.md */; };
 		FF61FD5F2622AEF000063A50 /* SearchCityNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF61FD5E2622AEF000063A50 /* SearchCityNameViewController.swift */; };
 		FF7751312626A0CD00740D62 /* CodableStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF7751302626A0CD00740D62 /* CodableStructures.swift */; };
@@ -26,6 +27,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0A948C8BFEDA0218ADB76376 /* Pods_OpenWeatherApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_OpenWeatherApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0EFBF87E588EBAF0647186BD /* Pods-OpenWeatherApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OpenWeatherApp.debug.xcconfig"; path = "Target Support Files/Pods-OpenWeatherApp/Pods-OpenWeatherApp.debug.xcconfig"; sourceTree = "<group>"; };
+		8CB77FEDD2E7F4F98973E887 /* Pods-OpenWeatherApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OpenWeatherApp.release.xcconfig"; path = "Target Support Files/Pods-OpenWeatherApp/Pods-OpenWeatherApp.release.xcconfig"; sourceTree = "<group>"; };
 		FF517CD72623629600F1B1EF /* Readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Readme.md; sourceTree = "<group>"; };
 		FF61FD5E2622AEF000063A50 /* SearchCityNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCityNameViewController.swift; sourceTree = "<group>"; };
 		FF7751302626A0CD00740D62 /* CodableStructures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableStructures.swift; sourceTree = "<group>"; };
@@ -51,18 +55,39 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB2F4E0D9663AF69B2166079 /* Pods_OpenWeatherApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A99BA00F825FF52753A31F17 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0A948C8BFEDA0218ADB76376 /* Pods_OpenWeatherApp.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E38BD042C4F5F2E431C16793 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0EFBF87E588EBAF0647186BD /* Pods-OpenWeatherApp.debug.xcconfig */,
+				8CB77FEDD2E7F4F98973E887 /* Pods-OpenWeatherApp.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		FFD71E2B2611D41D00C8BFA5 = {
 			isa = PBXGroup;
 			children = (
 				FF517CD72623629600F1B1EF /* Readme.md */,
 				FFD71E362611D41D00C8BFA5 /* OpenWeatherApp */,
 				FFD71E352611D41D00C8BFA5 /* Products */,
+				E38BD042C4F5F2E431C16793 /* Pods */,
+				A99BA00F825FF52753A31F17 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -104,9 +129,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = FFD71E482611D41E00C8BFA5 /* Build configuration list for PBXNativeTarget "OpenWeatherApp" */;
 			buildPhases = (
+				A61E3EA94E2B98030BCF8F2A /* [CP] Check Pods Manifest.lock */,
 				FFD71E302611D41D00C8BFA5 /* Sources */,
 				FFD71E312611D41D00C8BFA5 /* Frameworks */,
 				FFD71E322611D41D00C8BFA5 /* Resources */,
+				B0250FEAD9314E3C0B2BCF1D /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -163,6 +190,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A61E3EA94E2B98030BCF8F2A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-OpenWeatherApp-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B0250FEAD9314E3C0B2BCF1D /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-OpenWeatherApp/Pods-OpenWeatherApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-OpenWeatherApp/Pods-OpenWeatherApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-OpenWeatherApp/Pods-OpenWeatherApp-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		FFD71E302611D41D00C8BFA5 /* Sources */ = {
@@ -323,6 +392,7 @@
 		};
 		FFD71E492611D41E00C8BFA5 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0EFBF87E588EBAF0647186BD /* Pods-OpenWeatherApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -343,6 +413,7 @@
 		};
 		FFD71E4A2611D41E00C8BFA5 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8CB77FEDD2E7F4F98973E887 /* Pods-OpenWeatherApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
