@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 class SearchCityNameViewController: UIViewController,UISearchBarDelegate {
 
@@ -158,13 +159,32 @@ extension SearchCityNameViewController: UITableViewDataSource, UITableViewDelega
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.userSelectedPlacesLatitude = suggestedPlacenames[indexPath.row].geometry.coordinates[1]
-        UserDefaults.standard.set(userSelectedPlacesLatitude, forKey: "userSelectedPlacesLatitudeValue")
+//        UserDefaults.standard.set(userSelectedPlacesLatitude, forKey: "userSelectedPlacesLatitudeValue")
 
         self.userSelectedPlacesLongitude = suggestedPlacenames[indexPath.row].geometry.coordinates[0]
-        UserDefaults.standard.set(userSelectedPlacesLongitude, forKey: "userSelectedPlacesLongitudeValue")
+//        UserDefaults.standard.set(userSelectedPlacesLongitude, forKey: "userSelectedPlacesLongitudeValue")
 
         self.userSelectedPlacesname = self.suggestedPlacenames[indexPath.row].place_name ?? "Error"
-        UserDefaults.standard.set(userSelectedPlacesname, forKey: "userSelectedPlacesnameValue")
+//        UserDefaults.standard.set(userSelectedPlacesname, forKey: "userSelectedPlacesnameValue")
+        
+        do {
+            print(Realm.Configuration.defaultConfiguration)
+            let realmReference = try Realm()
+            
+            let weatherInfoObject = SaveWeatherInfos()
+            weatherInfoObject.stored_cityName = userSelectedPlacesname
+            weatherInfoObject.stored_latitude = userSelectedPlacesLatitude
+            weatherInfoObject.stored_longitude = userSelectedPlacesLongitude
+        
+            
+            realmReference.beginWrite()
+            realmReference.deleteAll()
+            realmReference.add(weatherInfoObject)
+            try realmReference.commitWrite()
+    
+        } catch {
+            print("Error in creating Realm Reference or writing in Realm!")
+        }
         
         performSegue(withIdentifier: "unwindSegue", sender: self)
     }

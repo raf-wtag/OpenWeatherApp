@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreLocation
+import RealmSwift
 
 class HomeViewController: UIViewController {
 
@@ -52,8 +53,14 @@ class HomeViewController: UIViewController {
             }
         }
         
-        if let userSearchedLocationName = UserDefaults.standard.string(forKey: "userSelectedPlacesnameValue") {
-            retriveSavedLocationData(for: userSearchedLocationName)
+//        if let userSearchedLocationName = UserDefaults.standard.string(forKey: "userSelectedPlacesnameValue") {
+//            retriveSavedLocationData(for: userSearchedLocationName)
+//        } else {
+//            checkLocationServies()
+//        }
+        
+        if checkIfStoredDataPresentInRealm() {
+            retriveSavedLocationDataFromRealm()
         } else {
             checkLocationServies()
         }
@@ -66,10 +73,39 @@ class HomeViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterInForegroundState), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     
-    private func retriveSavedLocationData(for place: String) {
-        locationName = place
-        latitude = UserDefaults.standard.double(forKey: "userSelectedPlacesLatitudeValue")
-        longitude = UserDefaults.standard.double(forKey: "userSelectedPlacesLongitudeValue")
+//    private func retriveSavedLocationData(for place: String) {
+//        locationName = place
+//        latitude = UserDefaults.standard.double(forKey: "userSelectedPlacesLatitudeValue")
+//        longitude = UserDefaults.standard.double(forKey: "userSelectedPlacesLongitudeValue")
+//    }
+    
+    private func checkIfStoredDataPresentInRealm() -> Bool {
+        do {
+            let realmReference = try Realm()
+            let fetchedDataFromRealm = realmReference.objects(SaveWeatherInfos.self)
+            
+            if fetchedDataFromRealm.count > 0 {
+                return true
+            }
+        } catch {
+            print("Error in Realm Integration in HomeViewController()")
+        }
+        return false
+    }
+    
+    private func retriveSavedLocationDataFromRealm() {
+        do {
+            let realmReference = try Realm()
+            let fetchedDataFromRealm = realmReference.objects(SaveWeatherInfos.self)
+            
+            if fetchedDataFromRealm.count == 1 {
+                locationName = fetchedDataFromRealm[0].stored_cityName
+                latitude = fetchedDataFromRealm[0].stored_latitude
+                longitude = fetchedDataFromRealm[0].stored_longitude
+            }
+        } catch {
+            print("Error in Realm Integration in HomeViewController()")
+        }
     }
 
     // MARK: - API Calling and Display
@@ -358,12 +394,14 @@ extension HomeViewController {
     }
     
     @IBAction func unwindToHomeViewController(_ sender: UIStoryboardSegue) {
-        guard let userSearchedLocationName = UserDefaults.standard.string(forKey: "userSelectedPlacesnameValue") else {
-            print("Error in retriving data from userDefaults")
-            return
-        }
+//        guard let userSearchedLocationName = UserDefaults.standard.string(forKey: "userSelectedPlacesnameValue") else {
+//            print("Error in retriving data from userDefaults")
+//            return
+//        }
         
-        retriveSavedLocationData(for: userSearchedLocationName)
+//        retriveSavedLocationData(for: userSearchedLocationName)
+        retriveSavedLocationDataFromRealm()
+        
         
         DispatchQueue.main.async {
             self.spinner.startAnimating()
