@@ -171,14 +171,14 @@ extension SearchCityNameViewController: UITableViewDataSource, UITableViewDelega
             print(Realm.Configuration.defaultConfiguration)
             let realmReference = try Realm()
             
-            let weatherInfoObject = SaveWeatherInfos()
+            let weatherInfoObject = StoredWeatherInfos()
             weatherInfoObject.stored_cityName = userSelectedPlacesname
             weatherInfoObject.stored_latitude = userSelectedPlacesLatitude
             weatherInfoObject.stored_longitude = userSelectedPlacesLongitude
         
             
             realmReference.beginWrite()
-            realmReference.deleteAll()
+            realmReference.delete(realmReference.objects(StoredWeatherInfos.self))
             realmReference.add(weatherInfoObject)
             try realmReference.commitWrite()
     

@@ -82,7 +82,7 @@ class HomeViewController: UIViewController {
     private func checkIfStoredDataPresentInRealm() -> Bool {
         do {
             let realmReference = try Realm()
-            let fetchedDataFromRealm = realmReference.objects(SaveWeatherInfos.self)
+            let fetchedDataFromRealm = realmReference.objects(StoredWeatherInfos.self)
             
             if fetchedDataFromRealm.count > 0 {
                 return true
@@ -96,7 +96,7 @@ class HomeViewController: UIViewController {
     private func retriveSavedLocationDataFromRealm() {
         do {
             let realmReference = try Realm()
-            let fetchedDataFromRealm = realmReference.objects(SaveWeatherInfos.self)
+            let fetchedDataFromRealm = realmReference.objects(StoredWeatherInfos.self)
             
             if fetchedDataFromRealm.count == 1 {
                 locationName = fetchedDataFromRealm[0].stored_cityName
