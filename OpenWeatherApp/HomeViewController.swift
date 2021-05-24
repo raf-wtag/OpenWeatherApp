@@ -8,7 +8,7 @@
 import UIKit
 import CoreLocation
 
-class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollectionViewDataSource {
+class HomeViewController: UIViewController {
 
     @IBOutlet weak var locationNameLabel: UILabel!
     @IBOutlet weak var spinner: UIActivityIndicatorView!
@@ -21,7 +21,6 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     @IBOutlet weak var presentdayWeatherDescription: UILabel!
     @IBOutlet weak var collection_View: UICollectionView!
     
- 
     var locationManager = CLLocationManager()
     var currentLocation: CLLocation?
     var latitude = 0.0
@@ -72,8 +71,121 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
         latitude = UserDefaults.standard.double(forKey: "userSelectedPlacesLatitudeValue")
         longitude = UserDefaults.standard.double(forKey: "userSelectedPlacesLongitudeValue")
     }
+
+    // MARK: - API Calling and Display
+    private func callFetchAPIData() {
+        fetchAPIData(completionHandler: { [self] (weather) in
+
+            currentDayData = weather.current
+            nextSevenDaysData = weather.daily
+            hourlyData = weather.hourly
+            timezoneIdentifier = weather.timezone
+
+            modifyDailyDataFromAPIResponse()
+            modifyHourlyDataFromAPIResponse()
+            weatherForecastDataDisplay()
+        })
+    }
+
+    private func modifyDailyDataFromAPIResponse() {
+        if !self.nextSevenDaysData.isEmpty {
+            self.presentDayData = Array(self.nextSevenDaysData.prefix(1))
+            self.nextSevenDaysData.removeFirst()
+        }
+    }
     
-    // MARK:- Location Feteching Part
+    private func modifyHourlyDataFromAPIResponse() {
+        if !self.hourlyData.isEmpty {
+            print("Before Slicing", self.hourlyData.count)
+            self.hourlyData = Array(self.hourlyData[0...23])
+            print("After Slicing", self.hourlyData.count)
+        }
+    }
+
+    private func weatherForecastDataDisplay() {
+        DispatchQueue.main.async {
+            print("In Dispathch",self.currentDayData)
+            self.dynamicCurrentDateNTime = self.currentDayData.dt
+            self.getCurrentTime()
+//                self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
+            self.presentDayTemp.text = "\(self.currentDayData.temp)°"
+            let url = URL(string: "https://openweathermap.org/img/wn/" + self.currentDayData.weather[0].icon + ".png")
+            self.presentDayWeatherIcon.imageLoad(from: url!)
+//                self.presentDayWeatherIcon.image = UIImage(named: self.CurrentDayData.weather[0].icon)
+            self.presentDaySunriseTime.text = "Sunrise: " + self.currentDayData.sunrise.fromUnixTimeToTime()
+            self.presentDaySunsetTime.text = "Sunset: " + self.currentDayData.sunset.fromUnixTimeToTime()
+            self.presentDayFeels.text = "Feels like: \(self.currentDayData.feels_like)°C"
+            self.presentdayWeatherDescription.text = self.currentDayData.weather[0].description.capitalized
+            self.locationNameLabel.text = self.locationName
+            
+            self.collection_View.reloadData()
+            self.spinner.stopAnimating()
+        }
+    }
+    
+    // MARK:- Real Time Clock Display
+    func getCurrentTime() {
+        timer.invalidate()
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.currentTimeAfterFetchedTime), userInfo: nil, repeats: true)
+    }
+    
+    @objc func currentTimeAfterFetchedTime(currentTime : Int) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, h:mm:ss a"
+//        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+//        let offset = TimeZone.current.secondsFromGMT()
+//        print("Checking", offset)
+        formatter.timeZone = TimeZone(identifier: self.timezoneIdentifier)
+        
+        DispatchQueue.main.async {
+            self.presentDayDateNTime.text = formatter.string(from: Date(timeIntervalSince1970: TimeInterval(self.dynamicCurrentDateNTime)))
+            self.dynamicCurrentDateNTime += 1
+            print(Date(timeIntervalSince1970: TimeInterval(self.dynamicCurrentDateNTime)))
+        }
+    }
+    
+    // MARK:- Notification Observer Action
+    @objc func appWillEnterInBackgroundState() {
+        print("About to go in background")
+        isAppEverWentInBackgroundState = true
+        dateFormatter.dateFormat = "h:mm:ss"
+        timeWhenAppWentInBackground = dateFormatter.string(from: Date())
+        print("Time now -> \(timeWhenAppWentInBackground)")
+//        timer.invalidate()
+    }
+
+    @objc func appWillEnterInForegroundState() {
+//        fetchCurrentLocation()
+//        timer.invalidate()
+//        checkLocationServies()
+        
+        dateFormatter.dateFormat = "h:mm:ss"
+        timeWhenAppComeInForeground = dateFormatter.string(from: Date())
+        
+        if let timeSpent = checkHowMuchTimeAppWasInBackground(), timeSpent >= 1.0 {
+            checkLocationServies()
+        }
+    }
+    
+    private func checkHowMuchTimeAppWasInBackground() -> Double? {
+        if isAppEverWentInBackgroundState {
+            guard let timeAtBackground = dateFormatter.date(from: timeWhenAppWentInBackground),
+                  let timeAtForeground = dateFormatter.date(from: timeWhenAppComeInForeground) else {
+                print("Error in time -> isAppEverWentInBackgroundState check")
+                return nil
+            }
+            let interval = timeAtForeground.timeIntervalSince(timeAtBackground)
+            let minute = interval / 60
+            print("after \(minute)")
+            return minute
+        }
+        return nil
+    }
+}
+
+
+// MARK:- Location Feteching Part
+extension HomeViewController: CLLocationManagerDelegate {
     func checkLocationServies() {
         if CLLocationManager.locationServicesEnabled() {
             setupLocationManager()
@@ -157,63 +269,12 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             } else {
                 print("Error in callReverseGeoCoder()")
             }
-            
-            
         })
     }
-    
-    // MARK: - API Calling and Display
-    private func callFetchAPIData() {
-        fetchAPIData(completionHandler: { [self] (weather) in
+}
 
-            currentDayData = weather.current
-            nextSevenDaysData = weather.daily
-            hourlyData = weather.hourly
-            timezoneIdentifier = weather.timezone
-
-            modifyDailyDataFromAPIResponse()
-            modifyHourlyDataFromAPIResponse()
-            weatherForecastDataDisplay()
-        })
-    }
-
-    private func modifyDailyDataFromAPIResponse() {
-        if !self.nextSevenDaysData.isEmpty {
-            self.presentDayData = Array(self.nextSevenDaysData.prefix(1))
-            self.nextSevenDaysData.removeFirst()
-        }
-    }
-    
-    private func modifyHourlyDataFromAPIResponse() {
-        if !self.hourlyData.isEmpty {
-            print("Before Slicing", self.hourlyData.count)
-            self.hourlyData = Array(self.hourlyData[0...23])
-            print("After Slicing", self.hourlyData.count)
-        }
-    }
-
-    private func weatherForecastDataDisplay() {
-        DispatchQueue.main.async {
-            print("In Dispathch",self.currentDayData)
-            self.dynamicCurrentDateNTime = self.currentDayData.dt
-            self.getCurrentTime()
-//                self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
-            self.presentDayTemp.text = "\(self.currentDayData.temp)°"
-            let url = URL(string: "https://openweathermap.org/img/wn/" + self.currentDayData.weather[0].icon + ".png")
-            self.presentDayWeatherIcon.imageLoad(from: url!)
-//                self.presentDayWeatherIcon.image = UIImage(named: self.CurrentDayData.weather[0].icon)
-            self.presentDaySunriseTime.text = "Sunrise: " + self.currentDayData.sunrise.fromUnixTimeToTime()
-            self.presentDaySunsetTime.text = "Sunset: " + self.currentDayData.sunset.fromUnixTimeToTime()
-            self.presentDayFeels.text = "Feels like: \(self.currentDayData.feels_like)°C"
-            self.presentdayWeatherDescription.text = self.currentDayData.weather[0].description.capitalized
-            self.locationNameLabel.text = self.locationName
-            
-            self.collection_View.reloadData()
-            self.spinner.stopAnimating()
-        }
-    }
-    
-    // MARK:- Define fetchAPIData()
+// MARK:- Define fetchAPIData()
+extension HomeViewController {
     func fetchAPIData(completionHandler: @escaping (WeatherData) -> ()) {
         let baseAddress = "https://api.openweathermap.org/data/2.5/onecall?"
         let lat = "lat=\(latitude)"
@@ -234,8 +295,7 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             return
         }
         
-        let task = URLSession.shared.dataTask(with: url, completionHandler: { (data, response, error) in
-
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             guard let data = data, error == nil else {
                 print("Error Occured in Retrieving Data in fetchAPIData()")
                 return
@@ -251,11 +311,14 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
             } catch {
                 print("Error in Data Decoding in fetchAPIData()", error)
             }
-        })
+        }
         task.resume()
     }
+}
+
+// MARK:- CollectionView
+extension HomeViewController: UICollectionViewDataSource {
     
-    // MARK:- CollectionView
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return hourlyData.count
     }
@@ -280,30 +343,20 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
             return CGSize(width: view.frame.width, height: 180)
     }
-    
-    // MARK:- Real Time Clock Display
+}
 
-    func getCurrentTime() {
-        timer.invalidate()
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.currentTimeAfterFetchedTime), userInfo: nil, repeats: true)
-    }
-    
-    @objc func currentTimeAfterFetchedTime(currentTime : Int) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d, h:mm:ss a"
-//        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-//        let offset = TimeZone.current.secondsFromGMT()
-//        print("Checking", offset)
-        formatter.timeZone = TimeZone(identifier: self.timezoneIdentifier)
+// MARK:- Segue
+extension HomeViewController {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let nextViewController = segue.destination as? WeeklyDataViewController
         
-        DispatchQueue.main.async {
-            self.presentDayDateNTime.text = formatter.string(from: Date(timeIntervalSince1970: TimeInterval(self.dynamicCurrentDateNTime)))
-            self.dynamicCurrentDateNTime += 1
-            print(Date(timeIntervalSince1970: TimeInterval(self.dynamicCurrentDateNTime)))
+        if nextViewController != nil {
+//            nextViewController?.latitude = self.latitude
+//            nextViewController?.longitude = self.longitude
+            nextViewController?.nextSevenDaysData = self.nextSevenDaysData
         }
     }
     
-    // MARK:- Unwind segue destination
     @IBAction func unwindToHomeViewController(_ sender: UIStoryboardSegue) {
         guard let userSearchedLocationName = UserDefaults.standard.string(forKey: "userSelectedPlacesnameValue") else {
             print("Error in retriving data from userDefaults")
@@ -332,54 +385,5 @@ class HomeViewController: UIViewController , CLLocationManagerDelegate, UICollec
 //            timer.invalidate()
 //            callFetchAPIData()
 //        }
-    }
-    
-    // MARK:- Notification Observer Action
-    @objc func appWillEnterInBackgroundState() {
-        print("About to go in background")
-        isAppEverWentInBackgroundState = true
-        dateFormatter.dateFormat = "h:mm:ss"
-        timeWhenAppWentInBackground = dateFormatter.string(from: Date())
-        print("Time now -> \(timeWhenAppWentInBackground)")
-//        timer.invalidate()
-    }
-
-    @objc func appWillEnterInForegroundState() {
-//        fetchCurrentLocation()
-//        timer.invalidate()
-//        checkLocationServies()
-        
-        dateFormatter.dateFormat = "h:mm:ss"
-        timeWhenAppComeInForeground = dateFormatter.string(from: Date())
-        
-        if let timeSpent = checkHowMuchTimeAppWasInBackground(), timeSpent >= 1.0 {
-            checkLocationServies()
-        }
-    }
-    
-    private func checkHowMuchTimeAppWasInBackground() -> Double? {
-        if isAppEverWentInBackgroundState {
-            guard let timeAtBackground = dateFormatter.date(from: timeWhenAppWentInBackground),
-                  let timeAtForeground = dateFormatter.date(from: timeWhenAppComeInForeground) else {
-                print("Error in time -> isAppEverWentInBackgroundState check")
-                return nil
-            }
-            let interval = timeAtForeground.timeIntervalSince(timeAtBackground)
-            let minute = interval / 60
-            print("after \(minute)")
-            return minute
-        }
-        return nil
-    }
-    
-    // MARK:- Segue Part. From here we pass the data to the WeeklyDataViewController
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let nextViewController = segue.destination as? WeeklyDataViewController
-        
-        if nextViewController != nil {
-//            nextViewController?.latitude = self.latitude
-//            nextViewController?.longitude = self.longitude
-            nextViewController?.nextSevenDaysData = self.nextSevenDaysData
-        }
     }
 }

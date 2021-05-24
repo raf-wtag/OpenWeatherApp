@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource {
+class SearchCityNameViewController: UIViewController,UISearchBarDelegate {
 
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
@@ -104,7 +104,6 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
                 return
             }
             
-//            // Prints Raw JSON response
 //            if let jsonData = try? JSONSerialization.jsonObject(with: data, options: []) {
 //                print(jsonData)
 //            }
@@ -125,8 +124,19 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
         }
         task.resume()
     }
+
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        let destinationVC = segue.destination as! HomeViewController
+//        print("In Segue preperation",userSelectedPlacesLatitude, userSelectedPlacesLongitude)
+//        destinationVC.userSelectedPlacesLatitude = self.userSelectedPlacesLatitude
+//        destinationVC.userSelectedPlacesLongitude = self.userSelectedPlacesLongitude
+//        destinationVC.reloadWeatherDataStatus = true
+//    }
     
-    // MARK:- TableView
+}
+
+// MARK:- TableView
+extension SearchCityNameViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return suggestedPlacenames.count
     }
@@ -158,13 +168,4 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate, UITabl
         
         performSegue(withIdentifier: "unwindSegue", sender: self)
     }
-    
-    
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        let destinationVC = segue.destination as! HomeViewController
-//        print("In Segue preperation",userSelectedPlacesLatitude, userSelectedPlacesLongitude)
-//        destinationVC.userSelectedPlacesLatitude = self.userSelectedPlacesLatitude
-//        destinationVC.userSelectedPlacesLongitude = self.userSelectedPlacesLongitude
-//        destinationVC.reloadWeatherDataStatus = true
-//    }
 }

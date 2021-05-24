@@ -58,9 +58,9 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We will use your Location Data for Forecast Weather in Your Location</string>
+	<string>Your Current Location will only be used to Forecast weather in your current Location while using this App</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>We will use your Location Data for Forecast Weather in Your Location</string>
+	<string>Your Current Location will only be used to Forecast weather in your current Location</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
