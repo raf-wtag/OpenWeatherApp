@@ -24,3 +24,19 @@ class StoredWeeklyWeatherInfos: Object {
     @objc dynamic var stored_minTemp: String = ""
     
 }
+
+class StoredDailyWeatherForecasts: Object {
+    @objc dynamic var date_time: Int = 0
+    @objc dynamic var temperatures: TemperatureResponse?
+    var weather: List<WeatherResponse> = List<WeatherResponse>()
+}
+
+class TemperatureResponse: Object {
+    @objc dynamic var max_temperature: Double = 0.0
+    @objc dynamic var min_temperature: Double = 0.0
+}
+
+class WeatherResponse: Object, Codable {
+    @objc dynamic var weather_description: String = ""
+    @objc dynamic var weather_icon: String = ""
+}

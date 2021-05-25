@@ -59,7 +59,7 @@ class HomeViewController: UIViewController {
 //            checkLocationServies()
 //        }
         
-        if checkIfStoredDataPresentInRealm() {
+        if checkIfDataStoredInRealm() {
             retriveSavedLocationDataFromRealm()
         } else {
             checkLocationServies()
@@ -79,7 +79,7 @@ class HomeViewController: UIViewController {
 //        longitude = UserDefaults.standard.double(forKey: "userSelectedPlacesLongitudeValue")
 //    }
     
-    private func checkIfStoredDataPresentInRealm() -> Bool {
+    private func checkIfDataStoredInRealm() -> Bool {
         do {
             let realmReference = try Realm()
             let fetchedDataFromRealm = realmReference.objects(StoredWeatherInfos.self)
@@ -390,6 +390,41 @@ extension HomeViewController {
 //            nextViewController?.latitude = self.latitude
 //            nextViewController?.longitude = self.longitude
             nextViewController?.nextSevenDaysData = self.nextSevenDaysData
+
+            do {
+                let realmReference = try Realm()
+                print("@@@@@@@@@@@@@@@@@@@@@")
+                realmReference.beginWrite()
+                realmReference.delete(realmReference.objects(StoredDailyWeatherForecasts.self))
+                realmReference.delete(realmReference.objects(TemperatureResponse.self))
+                realmReference.delete(realmReference.objects(WeatherResponse.self))
+                try realmReference.commitWrite()
+                
+                for eachItem in nextSevenDaysData {
+                    let weatherList = List<WeatherResponse>()
+                    let saveWeather = WeatherResponse()
+                    saveWeather.weather_description = eachItem.weather.first?.description ?? ""
+                    saveWeather.weather_icon = eachItem.weather.first?.icon ?? ""
+                    weatherList.append(saveWeather)
+                    
+                    let saveTemperature = TemperatureResponse()
+                    saveTemperature.max_temperature = eachItem.temp.max
+                    saveTemperature.min_temperature = eachItem.temp.min
+                    
+                    let saveDailyWeatherForecast = StoredDailyWeatherForecasts()
+                    saveDailyWeatherForecast.date_time = eachItem.dt
+                    saveDailyWeatherForecast.temperatures = saveTemperature
+                    saveDailyWeatherForecast.weather = weatherList
+
+                    realmReference.beginWrite()
+                    realmReference.add(saveDailyWeatherForecast)
+                    try realmReference.commitWrite()
+                }
+
+                print("@@@@@@@@@@@@@@@@@@@@@@@")
+            } catch {
+                print("Error in saving NextSevendaysData")
+            }
         }
     }
     

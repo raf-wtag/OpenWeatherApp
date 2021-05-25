@@ -7,6 +7,7 @@
 
 import UIKit
 import RealmSwift
+import Network
 
 class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -19,6 +20,10 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
 
     var iconImage: UIImage? = nil
     
+    let monitor = NWPathMonitor()
+    
+    
+    
     // MARK:- viewDidLoad()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,17 +33,19 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
 
         tableView.backgroundView = UIImageView(image: UIImage(named: "background.jpeg"))
         
-        do {
-            let realmReference = try Realm()
-            realmReference.beginWrite()
-            realmReference.delete(realmReference.objects(StoredWeeklyWeatherInfos.self))
-            try realmReference.commitWrite()
-        } catch {
-            
-        }
+//        do {
+//            let realmReference = try Realm()
+//            let data = realmReference.objects(StoredDailyWeatherForecasts.self)
+//            print(data.first)
+//            print("--------------------------------")
+//            realmReference.beginWrite()
+//            realmReference.delete(realmReference.objects(StoredWeeklyWeatherInfos.self))
+//            try realmReference.commitWrite()
+//        } catch {
+//            print("Error in Deleting previous data!")
+//        }
         
     }
-    
     
     // MARK:- TableView Part
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -65,22 +72,22 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
             cell.forecastMaxTemp.text = "Max: \(self.nextSevenDaysData[indexPath.row].temp.max)°C"
             cell.forecastMinTemp.text = "Min: \(self.nextSevenDaysData[indexPath.row].temp.min)°C"
             
-            do {
-                let realmReference = try Realm()
-                let weeklyInfoObject = StoredWeeklyWeatherInfos()
-                weeklyInfoObject.stored_weekDate = "\(self.nextSevenDaysData[indexPath.row].dt.fromUnixTimeToDate())"
-                weeklyInfoObject.stored_weatherIcon = urlString
-                weeklyInfoObject.stored_weatherDescription = "" + self.nextSevenDaysData[indexPath.row].weather[0].description.capitalized
-                weeklyInfoObject.stored_maxTemp = "Max: \(self.nextSevenDaysData[indexPath.row].temp.max)°C"
-                weeklyInfoObject.stored_minTemp = "Min: \(self.nextSevenDaysData[indexPath.row].temp.min)°C"
-                
-                realmReference.beginWrite()
-                realmReference.add(weeklyInfoObject)
-                try realmReference.commitWrite()
-                
-            } catch {
-                print("Error in reference in weekly wether forecast")
-            }
+//            do {
+//                let realmReference = try Realm()
+//                let weeklyInfoObject = StoredWeeklyWeatherInfos()
+//                weeklyInfoObject.stored_weekDate = "\(self.nextSevenDaysData[indexPath.row].dt.fromUnixTimeToDate())"
+//                weeklyInfoObject.stored_weatherIcon = urlString
+//                weeklyInfoObject.stored_weatherDescription = "" + self.nextSevenDaysData[indexPath.row].weather[0].description.capitalized
+//                weeklyInfoObject.stored_maxTemp = "Max: \(self.nextSevenDaysData[indexPath.row].temp.max)°C"
+//                weeklyInfoObject.stored_minTemp = "Min: \(self.nextSevenDaysData[indexPath.row].temp.min)°C"
+//
+//                realmReference.beginWrite()
+//                realmReference.add(weeklyInfoObject)
+//                try realmReference.commitWrite()
+//
+//            } catch {
+//                print("Error in reference in weekly wether forecast")
+//            }
         }
 //        cell.backgroundColor = indexPath.row % 2 == 0 ? .cyan : .lightGray
         
