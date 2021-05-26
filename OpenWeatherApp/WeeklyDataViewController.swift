@@ -41,9 +41,9 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
                 }
 //                print(type(of: nextSevenDaysDataFromRealm))
 
-                realmReference.beginWrite()
-                realmReference.delete(realmReference.objects(StoredWeeklyWeatherInfos.self))
-                try realmReference.commitWrite()
+//                realmReference.beginWrite()
+//                realmReference.delete(realmReference.objects(StoredWeeklyWeatherInfos.self))
+//                try realmReference.commitWrite()
             } catch {
                 print("Error in Deleting previous data!")
             }

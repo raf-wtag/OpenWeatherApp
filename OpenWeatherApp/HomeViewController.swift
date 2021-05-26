@@ -82,7 +82,13 @@ class HomeViewController: UIViewController {
     private func checkIfDataStoredInRealm() -> Bool {
         do {
             let realmReference = try Realm()
+            print(Realm.Configuration.defaultConfiguration)
+            print("Should print this")
             let fetchedDataFromRealm = realmReference.objects(StoredWeatherInfos.self)
+            for item in fetchedDataFromRealm {
+                print(item)
+                print("--------------")
+            }
             
             if fetchedDataFromRealm.count > 0 {
                 return true
@@ -289,7 +295,7 @@ extension HomeViewController: CLLocationManagerDelegate {
     private func callReverseGeoCoder() {
         let geoCoder = CLGeocoder()
         let userCurrentLocation = CLLocation(latitude: self.latitude, longitude: self.longitude     )
-        geoCoder.reverseGeocodeLocation(userCurrentLocation, completionHandler: { (placemarks, error) in
+        geoCoder.reverseGeocodeLocation(userCurrentLocation, completionHandler: { [weak self] (placemarks, error) in
             
             if let _ = error {
                 return
@@ -301,7 +307,31 @@ extension HomeViewController: CLLocationManagerDelegate {
             
             if let placeName = placemark.locality, let placeCountry =  placemark.country {
                 print(placeName)
-                self.locationName = "\(placeName), \(placeCountry)"
+                self?.locationName = "\(placeName), \(placeCountry)"
+                
+                DispatchQueue.main.async {
+                    self?.locationNameLabel.text = self?.locationName
+                }
+                
+                do {
+                    let realmReference = try Realm()
+                    realmReference.beginWrite()
+                    realmReference.delete(realmReference.objects(StoredWeatherInfos.self))
+                    try realmReference.commitWrite()
+                    
+                    let weatherInfoObject = StoredWeatherInfos()
+                    weatherInfoObject.stored_cityName = self!.locationName
+                    weatherInfoObject.stored_latitude = self!.latitude
+                    weatherInfoObject.stored_longitude = self!.longitude
+                    
+                    realmReference.beginWrite()
+                    realmReference.add(weatherInfoObject)
+                    try realmReference.commitWrite()
+                    
+                } catch {
+                    print("Error Saving in ReverseGeocoder()")
+                }
+                
             } else {
                 print("Error in callReverseGeoCoder()")
             }
