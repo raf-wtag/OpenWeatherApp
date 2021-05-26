@@ -81,6 +81,57 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		FF6AB70D265E6078002E189F /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				FFD71E372611D41D00C8BFA5 /* AppDelegate.swift */,
+				FFD71E392611D41D00C8BFA5 /* SceneDelegate.swift */,
+				FFBF0E262612F0370028C11B /* Keys.json */,
+				FFB1CC82262B4CC600A692FE /* FileReader.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		FF6AB70E265E60AF002E189F /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				FFD71E4E2611D6AA00C8BFA5 /* HomeViewController.swift */,
+				FF61FD5E2622AEF000063A50 /* SearchCityNameViewController.swift */,
+				FFD71E522611DAA700C8BFA5 /* WeeklyDataViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		FF6AB70F265E60C7002E189F /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				FF885A6326149EAB00F0FAFF /* Extensions.swift */,
+				FF7751302626A0CD00740D62 /* CodableStructures.swift */,
+				FF6DF6CE265B7BE100DCBD6D /* StoredWeatherInfos.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		FF6AB710265E60E1002E189F /* View */ = {
+			isa = PBXGroup;
+			children = (
+				FF7751332626A21400740D62 /* AutoCompleteLocationCustomTableViewCell.swift */,
+				FFBDC71E2615CBE5002779BE /* CustomCollectionViewCell.swift */,
+				FFD71E592611E50200C8BFA5 /* CustomTableViewCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		FF6AB712265E6100002E189F /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				FFD71E3D2611D41D00C8BFA5 /* Main.storyboard */,
+				FFD71E402611D41E00C8BFA5 /* Assets.xcassets */,
+				FFD71E422611D41E00C8BFA5 /* LaunchScreen.storyboard */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
 		FFD71E2B2611D41D00C8BFA5 = {
 			isa = PBXGroup;
 			children = (
@@ -103,23 +154,12 @@
 		FFD71E362611D41D00C8BFA5 /* OpenWeatherApp */ = {
 			isa = PBXGroup;
 			children = (
-				FFD71E372611D41D00C8BFA5 /* AppDelegate.swift */,
-				FFD71E392611D41D00C8BFA5 /* SceneDelegate.swift */,
-				FFD71E4E2611D6AA00C8BFA5 /* HomeViewController.swift */,
-				FFD71E3D2611D41D00C8BFA5 /* Main.storyboard */,
-				FF61FD5E2622AEF000063A50 /* SearchCityNameViewController.swift */,
-				FF7751332626A21400740D62 /* AutoCompleteLocationCustomTableViewCell.swift */,
-				FF7751302626A0CD00740D62 /* CodableStructures.swift */,
-				FFBDC71E2615CBE5002779BE /* CustomCollectionViewCell.swift */,
-				FFD71E522611DAA700C8BFA5 /* WeeklyDataViewController.swift */,
-				FF885A6326149EAB00F0FAFF /* Extensions.swift */,
-				FFD71E592611E50200C8BFA5 /* CustomTableViewCell.swift */,
-				FFD71E402611D41E00C8BFA5 /* Assets.xcassets */,
-				FFD71E422611D41E00C8BFA5 /* LaunchScreen.storyboard */,
+				FF6AB70D265E6078002E189F /* Utilities */,
+				FF6AB712265E6100002E189F /* Assets */,
+				FF6AB70F265E60C7002E189F /* Model */,
+				FF6AB710265E60E1002E189F /* View */,
+				FF6AB70E265E60AF002E189F /* Controllers */,
 				FFD71E452611D41E00C8BFA5 /* Info.plist */,
-				FFBF0E262612F0370028C11B /* Keys.json */,
-				FFB1CC82262B4CC600A692FE /* FileReader.swift */,
-				FF6DF6CE265B7BE100DCBD6D /* StoredWeatherInfos.swift */,
 			);
 			path = OpenWeatherApp;
 			sourceTree = "<group>";
