@@ -413,7 +413,7 @@ extension HomeViewController {
                     
                     let saveDailyWeatherForecast = StoredDailyWeatherForecasts()
                     saveDailyWeatherForecast.date_time = eachItem.dt
-                    saveDailyWeatherForecast.temperatures = saveTemperature
+                    saveDailyWeatherForecast.temperature = saveTemperature
                     saveDailyWeatherForecast.weather = weatherList
 
                     realmReference.beginWrite()

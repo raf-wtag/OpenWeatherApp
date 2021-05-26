@@ -27,7 +27,7 @@ class StoredWeeklyWeatherInfos: Object {
 
 class StoredDailyWeatherForecasts: Object {
     @objc dynamic var date_time: Int = 0
-    @objc dynamic var temperatures: TemperatureResponse?
+    @objc dynamic var temperature: TemperatureResponse?
     var weather: List<WeatherResponse> = List<WeatherResponse>()
 }
 
