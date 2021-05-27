@@ -10,7 +10,8 @@
 		AB2F4E0D9663AF69B2166079 /* Pods_OpenWeatherApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A948C8BFEDA0218ADB76376 /* Pods_OpenWeatherApp.framework */; };
 		FF517CD82623629600F1B1EF /* Readme.md in Resources */ = {isa = PBXBuildFile; fileRef = FF517CD72623629600F1B1EF /* Readme.md */; };
 		FF61FD5F2622AEF000063A50 /* SearchCityNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF61FD5E2622AEF000063A50 /* SearchCityNameViewController.swift */; };
-		FF6DF6CF265B7BE100DCBD6D /* StoredWeatherInfos.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6DF6CE265B7BE100DCBD6D /* StoredWeatherInfos.swift */; };
+		FF6AB719265E696B002E189F /* InternetConnectionCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6AB718265E696B002E189F /* InternetConnectionCheck.swift */; };
+		FF6DF6CF265B7BE100DCBD6D /* RealmClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6DF6CE265B7BE100DCBD6D /* RealmClasses.swift */; };
 		FF7751312626A0CD00740D62 /* CodableStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF7751302626A0CD00740D62 /* CodableStructures.swift */; };
 		FF7751342626A21400740D62 /* AutoCompleteLocationCustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF7751332626A21400740D62 /* AutoCompleteLocationCustomTableViewCell.swift */; };
 		FF885A6426149EAB00F0FAFF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF885A6326149EAB00F0FAFF /* Extensions.swift */; };
@@ -33,7 +34,8 @@
 		8CB77FEDD2E7F4F98973E887 /* Pods-OpenWeatherApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OpenWeatherApp.release.xcconfig"; path = "Target Support Files/Pods-OpenWeatherApp/Pods-OpenWeatherApp.release.xcconfig"; sourceTree = "<group>"; };
 		FF517CD72623629600F1B1EF /* Readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Readme.md; sourceTree = "<group>"; };
 		FF61FD5E2622AEF000063A50 /* SearchCityNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCityNameViewController.swift; sourceTree = "<group>"; };
-		FF6DF6CE265B7BE100DCBD6D /* StoredWeatherInfos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoredWeatherInfos.swift; sourceTree = "<group>"; };
+		FF6AB718265E696B002E189F /* InternetConnectionCheck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternetConnectionCheck.swift; sourceTree = "<group>"; };
+		FF6DF6CE265B7BE100DCBD6D /* RealmClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmClasses.swift; sourceTree = "<group>"; };
 		FF7751302626A0CD00740D62 /* CodableStructures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableStructures.swift; sourceTree = "<group>"; };
 		FF7751332626A21400740D62 /* AutoCompleteLocationCustomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoCompleteLocationCustomTableViewCell.swift; sourceTree = "<group>"; };
 		FF885A6326149EAB00F0FAFF /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 				FFD71E392611D41D00C8BFA5 /* SceneDelegate.swift */,
 				FFBF0E262612F0370028C11B /* Keys.json */,
 				FFB1CC82262B4CC600A692FE /* FileReader.swift */,
+				FF6AB718265E696B002E189F /* InternetConnectionCheck.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -107,7 +110,7 @@
 			children = (
 				FF885A6326149EAB00F0FAFF /* Extensions.swift */,
 				FF7751302626A0CD00740D62 /* CodableStructures.swift */,
-				FF6DF6CE265B7BE100DCBD6D /* StoredWeatherInfos.swift */,
+				FF6DF6CE265B7BE100DCBD6D /* RealmClasses.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -286,9 +289,10 @@
 				FF7751312626A0CD00740D62 /* CodableStructures.swift in Sources */,
 				FFBDC71F2615CBE5002779BE /* CustomCollectionViewCell.swift in Sources */,
 				FFB1CC83262B4CC600A692FE /* FileReader.swift in Sources */,
+				FF6AB719265E696B002E189F /* InternetConnectionCheck.swift in Sources */,
 				FF61FD5F2622AEF000063A50 /* SearchCityNameViewController.swift in Sources */,
 				FFD71E3A2611D41D00C8BFA5 /* SceneDelegate.swift in Sources */,
-				FF6DF6CF265B7BE100DCBD6D /* StoredWeatherInfos.swift in Sources */,
+				FF6DF6CF265B7BE100DCBD6D /* RealmClasses.swift in Sources */,
 				FFD71E4F2611D6AA00C8BFA5 /* HomeViewController.swift in Sources */,
 				FFD71E532611DAA700C8BFA5 /* WeeklyDataViewController.swift in Sources */,
 				FF885A6426149EAB00F0FAFF /* Extensions.swift in Sources */,

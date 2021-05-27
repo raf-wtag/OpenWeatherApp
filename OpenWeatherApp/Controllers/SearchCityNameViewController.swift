@@ -7,6 +7,7 @@
 
 import UIKit
 import RealmSwift
+import Network
 
 class SearchCityNameViewController: UIViewController,UISearchBarDelegate {
 

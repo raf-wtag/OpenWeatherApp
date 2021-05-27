@@ -19,35 +19,50 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
     var nextSevenDaysData = [Daily]()
     var iconImage: UIImage? = nil
     let monitor = NWPathMonitor()
-    var isReadForcastDataFromRealm = true
+//    var isReadForcastDataFromRealm = true
     var nextSevenDaysDataFromRealm = Array<StoredDailyWeatherForecasts>()
     
     // MARK:- viewDidLoad()
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        tableView.dataSource = self
-        tableView.delegate = self
 
+        tableView.delegate = self
+        tableView.dataSource = self
         tableView.backgroundView = UIImageView(image: UIImage(named: "background.jpeg"))
         
-        if isReadForcastDataFromRealm {
+        if true {
             do {
                 let realmReference = try Realm()
                 let retrivedData = realmReference.objects(StoredDailyWeatherForecasts.self)
                 nextSevenDaysDataFromRealm = Array(retrivedData)
-                for item in nextSevenDaysDataFromRealm {
-                    print(item)
-                }
-//                print(type(of: nextSevenDaysDataFromRealm))
-
-//                realmReference.beginWrite()
-//                realmReference.delete(realmReference.objects(StoredWeeklyWeatherInfos.self))
-//                try realmReference.commitWrite()
             } catch {
                 print("Error in Deleting previous data!")
             }
+            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+            print(nextSevenDaysData.count)
+            print(nextSevenDaysDataFromRealm.count)
         }
+    }
+    
+    private func checkIfWeeklyForecastPresentInRealm() -> Bool {
+        do {
+            let realmReference = try Realm()
+            let fetchedDataFromRealm = realmReference.objects(StoredDailyWeatherForecasts.self)
+
+            if fetchedDataFromRealm.count > 0 {
+                return true
+            }
+        } catch {
+            print("Error in Realm Integration in HomeViewController()")
+        }
+        return false
+    }
+    
+    private func IsWeeklyDataSourceRealm() -> Bool {
+        if nextSevenDaysData.count == 0 {
+            return true
+        }
+        return false
     }
     
     // MARK:- TableView Part
@@ -56,6 +71,9 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if IsWeeklyDataSourceRealm() {
+            return nextSevenDaysDataFromRealm.count
+        }
         return nextSevenDaysData.count
     }
     
@@ -63,7 +81,8 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "table_cell") as! CustomTableViewCell
         
-        if isReadForcastDataFromRealm {
+        if IsWeeklyDataSourceRealm() {
+            print("Here")
             cell.forecastDate.text = "\(nextSevenDaysDataFromRealm[indexPath.row].date_time.fromUnixTimeToDate())"
             
             let urlString = "https://openweathermap.org/img/wn/" + nextSevenDaysDataFromRealm[indexPath.row].weather[0].weather_icon + ".png"
@@ -77,22 +96,21 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
             if let min_temperature = nextSevenDaysDataFromRealm[indexPath.row].temperature?.min_temperature {
                 cell.forecastMinTemp.text = "Min: \(min_temperature)°C"
             }
-           
-            
+
         } else {
-            
+            print("There")
             if indexPath.row <= 6 {
                 cell.forecastDate.text = "\(self.nextSevenDaysData[indexPath.row].dt.fromUnixTimeToDate())"
-    //            cell.forecastSunriseTime.text = "Sunrise: " + self.NextSevenDaysData[indexPath.row].sunrise.fromUnixTimeToTime()
-    //            cell.forecastSunsetTime.text = "Sunset: " + self.NextSevenDaysData[indexPath.row].sunset.fromUnixTimeToTime()
-    //            cell.forecastWeatherIcon.image = UIImage(named: self.NextSevenDaysData[indexPath.row].weather[0].icon)
+//    //            cell.forecastSunriseTime.text = "Sunrise: " + self.NextSevenDaysData[indexPath.row].sunrise.fromUnixTimeToTime()
+//    //            cell.forecastSunsetTime.text = "Sunset: " + self.NextSevenDaysData[indexPath.row].sunset.fromUnixTimeToTime()
+//    //            cell.forecastWeatherIcon.image = UIImage(named: self.NextSevenDaysData[indexPath.row].weather[0].icon)
                 let urlString = "https://openweathermap.org/img/wn/" + self.nextSevenDaysData[indexPath.row].weather[0].icon + ".png"
                 let url = URL(string: urlString)
                 cell.forecastWeatherIcon.imageLoad(from: url!)
                 cell.forecastWeatherDescription.text = "" + self.nextSevenDaysData[indexPath.row].weather[0].description.capitalized
                 cell.forecastMaxTemp.text = "Max: \(self.nextSevenDaysData[indexPath.row].temp.max)°C"
                 cell.forecastMinTemp.text = "Min: \(self.nextSevenDaysData[indexPath.row].temp.min)°C"
-                
+
     //            do {
     //                let realmReference = try Realm()
     //                let weeklyInfoObject = StoredWeeklyWeatherInfos()

@@ -39,6 +39,8 @@ class HomeViewController: UIViewController {
     var isAppEverWentInBackgroundState = false
     var timeWhenAppWentInBackground = ""
     var timeWhenAppComeInForeground = ""
+    var hourlyDataFromRealm = Array<StoredHourlyWeatherResponse>()
+    
     
     // MARK:- viewDidLoad() Part
     override func viewDidLoad() {
@@ -53,24 +55,34 @@ class HomeViewController: UIViewController {
             }
         }
         
+        if checkIfDataStoredInRealm() {
+            weatherForecastDisplayFromRealm()
+        }
+        
+//        checkInternetConnectivity()
+        
 //        if let userSearchedLocationName = UserDefaults.standard.string(forKey: "userSelectedPlacesnameValue") {
 //            retriveSavedLocationData(for: userSearchedLocationName)
 //        } else {
 //            checkLocationServies()
 //        }
         
-        if checkIfDataStoredInRealm() {
-            retriveSavedLocationDataFromRealm()
-        } else {
-            checkLocationServies()
-        }
-
-        callFetchAPIData()
-        
         collection_View.dataSource = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterInBackgroundState), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterInForegroundState), name: UIApplication.willEnterForegroundNotification, object: nil)
+    }
+    
+    private func checkInternetConnectivity() {
+        if InternetConnectionCheck.ConnectionStatus() {
+            checkLocationServies()
+            callFetchAPIData()
+        } else {
+            displayAlertWithButton(dialogTitle: "No Internet", dialogMessage: "Please connect to Wi-Fi or enable Mobile Data to see the Weather Forecasts", buttonTitle: "Close")
+            DispatchQueue.main.async {
+                self.spinner.stopAnimating()
+            }
+        }
     }
     
 //    private func retriveSavedLocationData(for place: String) {
@@ -83,12 +95,11 @@ class HomeViewController: UIViewController {
         do {
             let realmReference = try Realm()
             print(Realm.Configuration.defaultConfiguration)
-            print("Should print this")
             let fetchedDataFromRealm = realmReference.objects(StoredWeatherInfos.self)
-            for item in fetchedDataFromRealm {
-                print(item)
-                print("--------------")
-            }
+            
+//            for item in fetchedDataFromRealm {
+//                print(item)
+//            }
             
             if fetchedDataFromRealm.count > 0 {
                 return true
@@ -141,32 +152,162 @@ class HomeViewController: UIViewController {
             print("Before Slicing", self.hourlyData.count)
             self.hourlyData = Array(self.hourlyData[0...23])
             print("After Slicing", self.hourlyData.count)
+            
+            saveHourlyWeatherData()
         }
+    }
+    
+    private func saveHourlyWeatherData() {
+        do {
+            let realmReference = try Realm()
+            realmReference.beginWrite()
+            realmReference.delete(realmReference.objects(StoredHourlyWeatherResponse.self))
+            try realmReference.commitWrite()
+            
+            for item in hourlyData {
+                let weatherResponseObject = List<HourlyWeatherResponse>()
+                let saveWeatherResponse = HourlyWeatherResponse()
+                saveWeatherResponse.weather_icon = item.weather[0].icon
+                weatherResponseObject.append(saveWeatherResponse)
+                
+                let hourlyWeatherDataObject =  StoredHourlyWeatherResponse()
+                hourlyWeatherDataObject.dt = item.dt
+                hourlyWeatherDataObject.temp = item.temp
+                hourlyWeatherDataObject.feels_like = item.feels_like
+                hourlyWeatherDataObject.weather = weatherResponseObject
+                
+                realmReference.beginWrite()
+                realmReference.add(hourlyWeatherDataObject)
+                try realmReference.commitWrite()
+            }
+        } catch {
+            print("Error in saving Hourly data in Realm")
+        }
+    }
+    
+    private func weatherForecastDisplayFromRealm() {
+        let realmReference = try! Realm()
+        let fetchedCurrentDataFromRealm = realmReference.objects(StoredCurrentWeatherResponse.self)
+        let fetchedWeatherInfo = realmReference.objects(StoredWeatherInfos.self)
+        
+        self.locationNameLabel.text = fetchedWeatherInfo[0].stored_cityName
+        self.createDynamicTimeFromDevice()
+        let urlString = "https://openweathermap.org/img/wn/" + fetchedCurrentDataFromRealm[0].weather[0].weather_icon + ".png"
+        let url = URL(string: urlString)
+        self.presentDayWeatherIcon.imageLoad(from: url!)
+        self.presentDaySunriseTime.text = "Sunrise: " + fetchedCurrentDataFromRealm[0].sunrise.fromUnixTimeToTime()
+        self.presentDaySunsetTime.text = "Sunset: " + fetchedCurrentDataFromRealm[0].sunset.fromUnixTimeToTime()
+        self.presentDayFeels.text = "Feels like: \(fetchedCurrentDataFromRealm[0].feels_like)°C"
+        
+        self.hourlyForecastDisplayFromRealm()
+        self.collection_View.reloadData()
+        self.spinner.stopAnimating()
+    }
+    
+    private func hourlyForecastDisplayFromRealm() {
+        let realmReference = try! Realm()
+        let fetchedHourlyDataFromRealm = realmReference.objects(StoredHourlyWeatherResponse.self)
+        hourlyDataFromRealm = Array(fetchedHourlyDataFromRealm)
+        
     }
 
     private func weatherForecastDataDisplay() {
-        DispatchQueue.main.async {
-            print("In Dispathch",self.currentDayData)
-            self.dynamicCurrentDateNTime = self.currentDayData.dt
-            self.getCurrentTime()
-//                self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
-            self.presentDayTemp.text = "\(self.currentDayData.temp)°"
-            let url = URL(string: "https://openweathermap.org/img/wn/" + self.currentDayData.weather[0].icon + ".png")
-            self.presentDayWeatherIcon.imageLoad(from: url!)
-//                self.presentDayWeatherIcon.image = UIImage(named: self.CurrentDayData.weather[0].icon)
-            self.presentDaySunriseTime.text = "Sunrise: " + self.currentDayData.sunrise.fromUnixTimeToTime()
-            self.presentDaySunsetTime.text = "Sunset: " + self.currentDayData.sunset.fromUnixTimeToTime()
-            self.presentDayFeels.text = "Feels like: \(self.currentDayData.feels_like)°C"
-            self.presentdayWeatherDescription.text = self.currentDayData.weather[0].description.capitalized
-            self.locationNameLabel.text = self.locationName
+            DispatchQueue.main.async {
+                print("In Dispathch",self.currentDayData)
+                self.dynamicCurrentDateNTime = self.currentDayData.dt
+                self.getDynamicTimeFromResponse()
+    //                self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
+                self.presentDayTemp.text = "\(self.currentDayData.temp)°"
+                let urlString = "https://openweathermap.org/img/wn/" + self.currentDayData.weather[0].icon + ".png"
+                let url = URL(string: urlString)
+                self.presentDayWeatherIcon.imageLoad(from: url!)
+    //                self.presentDayWeatherIcon.image = UIImage(named: self.CurrentDayData.weather[0].icon)
+                self.presentDaySunriseTime.text = "Sunrise: " + self.currentDayData.sunrise.fromUnixTimeToTime()
+                self.presentDaySunsetTime.text = "Sunset: " + self.currentDayData.sunset.fromUnixTimeToTime()
+                self.presentDayFeels.text = "Feels like: \(self.currentDayData.feels_like)°C"
+                self.presentdayWeatherDescription.text = self.currentDayData.weather[0].description.capitalized
+                self.locationNameLabel.text = self.locationName
+                
+                self.collection_View.reloadData()
+                self.spinner.stopAnimating()
+                
+                self.saveCurrentWeatherData()
+                self.saveWeeklyForecastDataInRealm()
+            }
+//        }
+    }
+    
+    private func saveCurrentWeatherData() {
+        do {
+            let realmReference = try Realm()
             
-            self.collection_View.reloadData()
-            self.spinner.stopAnimating()
+            realmReference.beginWrite()
+            realmReference.delete(realmReference.objects(StoredCurrentWeatherResponse.self))
+            realmReference.delete(realmReference.objects(PresentDayWeatherResponse.self))
+            try realmReference.commitWrite()
+            
+            let weatherResponseObject = List<PresentDayWeatherResponse>()
+            let saveWeatherResponse = PresentDayWeatherResponse()
+            saveWeatherResponse.weather_description = self.currentDayData.weather[0].description
+            saveWeatherResponse.weather_icon = self.currentDayData.weather[0].icon
+            weatherResponseObject.append(saveWeatherResponse)
+            
+            let currentWeatherDataObject =  StoredCurrentWeatherResponse()
+            currentWeatherDataObject.dt = self.currentDayData.dt
+            currentWeatherDataObject.sunrise = self.currentDayData.sunrise
+            currentWeatherDataObject.sunset = self.currentDayData.sunset
+            currentWeatherDataObject.temp = self.currentDayData.temp
+            currentWeatherDataObject.feels_like = self.currentDayData.feels_like
+            currentWeatherDataObject.weather = weatherResponseObject
+            
+            realmReference.beginWrite()
+            realmReference.add(currentWeatherDataObject)
+            try realmReference.commitWrite()
+
+        } catch {
+            print("Error in saving Current Weather Data")
+        }
+    }
+    
+    private func saveWeeklyForecastDataInRealm() {
+        do {
+            let realmReference = try Realm()
+            print("@@@@@@@@@@@@@@@@@@@@@")
+            realmReference.beginWrite()
+            realmReference.delete(realmReference.objects(StoredDailyWeatherForecasts.self))
+            realmReference.delete(realmReference.objects(TemperatureResponse.self))
+            realmReference.delete(realmReference.objects(WeatherResponse.self))
+            try realmReference.commitWrite()
+            
+            for eachItem in nextSevenDaysData {
+                let weatherList = List<WeatherResponse>()
+                let saveWeather = WeatherResponse()
+                saveWeather.weather_description = eachItem.weather.first?.description ?? ""
+                saveWeather.weather_icon = eachItem.weather.first?.icon ?? ""
+                weatherList.append(saveWeather)
+                
+                let saveTemperature = TemperatureResponse()
+                saveTemperature.max_temperature = eachItem.temp.max
+                saveTemperature.min_temperature = eachItem.temp.min
+                
+                let saveDailyWeatherForecast = StoredDailyWeatherForecasts()
+                saveDailyWeatherForecast.date_time = eachItem.dt
+                saveDailyWeatherForecast.temperature = saveTemperature
+                saveDailyWeatherForecast.weather = weatherList
+
+                realmReference.beginWrite()
+                realmReference.add(saveDailyWeatherForecast)
+                try realmReference.commitWrite()
+            }
+
+            print("@@@@@@@@@@@@@@@@@@@@@@@")
+        } catch {
+            print("Error in saving NextSevendaysData")
         }
     }
     
     // MARK:- Real Time Clock Display
-    func getCurrentTime() {
+    func getDynamicTimeFromResponse() {
         timer.invalidate()
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.currentTimeAfterFetchedTime), userInfo: nil, repeats: true)
     }
@@ -185,6 +326,22 @@ class HomeViewController: UIViewController {
             print(Date(timeIntervalSince1970: TimeInterval(self.dynamicCurrentDateNTime)))
         }
     }
+    
+    func createDynamicTimeFromDevice() {
+        timer.invalidate()
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.currentTimeFromDevice), userInfo: nil, repeats: true)
+    }
+    
+    @objc func currentTimeFromDevice() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, h:mm:ss a"
+        
+        DispatchQueue.main.async {
+            self.presentDayDateNTime.text = formatter.string(from: Date())
+            print(Date())
+        }
+    }
+    
     
     // MARK:- Notification Observer Action
     @objc func appWillEnterInBackgroundState() {
@@ -385,23 +542,47 @@ extension HomeViewController {
 // MARK:- CollectionView
 extension HomeViewController: UICollectionViewDataSource {
     
+    private func IsDailyWeatherDataSourceRealm() -> Bool {
+        if hourlyData.count == 0 {
+            return true
+        }
+        return false
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if IsDailyWeatherDataSourceRealm() {
+            return hourlyDataFromRealm.count
+        }
         return hourlyData.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionview_cell", for: indexPath) as! CustomCollectionViewCell
-        print("\(self.hourlyData[indexPath.row].temp)°C")
-        print(self.hourlyData[indexPath.row].dt.fromUnixTimeToTime())
-        cell.forecastHourlyTemp.text = "\(self.hourlyData[indexPath.row].temp)°C"
-        cell.forecastHourlyTime.text = self.hourlyData[indexPath.row].dt.fromUnixTimeToTime()
-//        cell.forecastHourlyWeatherIcon.image = UIImage(named: self.HourlyData[indexPath.row].weather[0].icon)
-        let urlString = "https://openweathermap.org/img/wn/" + self.hourlyData[indexPath.row].weather[0].icon + ".png"
-        if let url = URL(string: urlString) {
-            cell.forecastHourlyWeatherIcon.imageLoad(from: url)
+//        print("\(self.hourlyData[indexPath.row].temp)°C")
+//        print(self.hourlyData[indexPath.row].dt.fromUnixTimeToTime())
+        
+        if IsDailyWeatherDataSourceRealm() {
+            cell.forecastHourlyTemp.text = "\(self.hourlyDataFromRealm[indexPath.row].temp)°C"
+            cell.forecastHourlyTime.text = self.hourlyDataFromRealm[indexPath.row].dt.fromUnixTimeToTime()
+            let urlString = "https://openweathermap.org/img/wn/" + self.hourlyDataFromRealm[indexPath.row].weather[0].weather_icon + ".png"
+            if let url = URL(string: urlString) {
+                cell.forecastHourlyWeatherIcon.imageLoad(from: url)
+            } else {
+                print("Error in URL() in collectionView - cellForItemAt indexPath")
+            }
         } else {
-            print("Error in URL() in collectionView - cellForItemAt indexPath")
+            cell.forecastHourlyTemp.text = "\(self.hourlyData[indexPath.row].temp)°C"
+            cell.forecastHourlyTime.text = self.hourlyData[indexPath.row].dt.fromUnixTimeToTime()
+    //        cell.forecastHourlyWeatherIcon.image = UIImage(named: self.HourlyData[indexPath.row].weather[0].icon)
+            let urlString = "https://openweathermap.org/img/wn/" + self.hourlyData[indexPath.row].weather[0].icon + ".png"
+            if let url = URL(string: urlString) {
+                cell.forecastHourlyWeatherIcon.imageLoad(from: url)
+            } else {
+                print("Error in URL() in collectionView - cellForItemAt indexPath")
+            }
         }
+        
+        
 
         return cell
     }
@@ -420,41 +601,6 @@ extension HomeViewController {
 //            nextViewController?.latitude = self.latitude
 //            nextViewController?.longitude = self.longitude
             nextViewController?.nextSevenDaysData = self.nextSevenDaysData
-
-            do {
-                let realmReference = try Realm()
-                print("@@@@@@@@@@@@@@@@@@@@@")
-                realmReference.beginWrite()
-                realmReference.delete(realmReference.objects(StoredDailyWeatherForecasts.self))
-                realmReference.delete(realmReference.objects(TemperatureResponse.self))
-                realmReference.delete(realmReference.objects(WeatherResponse.self))
-                try realmReference.commitWrite()
-                
-                for eachItem in nextSevenDaysData {
-                    let weatherList = List<WeatherResponse>()
-                    let saveWeather = WeatherResponse()
-                    saveWeather.weather_description = eachItem.weather.first?.description ?? ""
-                    saveWeather.weather_icon = eachItem.weather.first?.icon ?? ""
-                    weatherList.append(saveWeather)
-                    
-                    let saveTemperature = TemperatureResponse()
-                    saveTemperature.max_temperature = eachItem.temp.max
-                    saveTemperature.min_temperature = eachItem.temp.min
-                    
-                    let saveDailyWeatherForecast = StoredDailyWeatherForecasts()
-                    saveDailyWeatherForecast.date_time = eachItem.dt
-                    saveDailyWeatherForecast.temperature = saveTemperature
-                    saveDailyWeatherForecast.weather = weatherList
-
-                    realmReference.beginWrite()
-                    realmReference.add(saveDailyWeatherForecast)
-                    try realmReference.commitWrite()
-                }
-
-                print("@@@@@@@@@@@@@@@@@@@@@@@")
-            } catch {
-                print("Error in saving NextSevendaysData")
-            }
         }
     }
     

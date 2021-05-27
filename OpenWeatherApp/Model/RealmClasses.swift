@@ -37,3 +37,28 @@ class WeatherResponse: Object, Codable {
     @objc dynamic var weather_description: String = ""
     @objc dynamic var weather_icon: String = ""
 }
+
+class StoredCurrentWeatherResponse: Object {
+    @objc dynamic var dt: Int = 0
+    @objc dynamic var sunrise : Int = 0
+    @objc dynamic var sunset : Int = 0
+    @objc dynamic var temp : Double = 0.0
+    @objc dynamic var feels_like : Double = 0.0
+    var weather = List<PresentDayWeatherResponse>()
+}
+
+class PresentDayWeatherResponse: Object, Codable {
+    @objc dynamic var weather_description: String = ""
+    @objc dynamic var weather_icon: String = ""
+}
+
+class StoredHourlyWeatherResponse: Object {
+    @objc dynamic var dt: Int = 0
+    @objc dynamic var temp: Double = 0.0
+    @objc dynamic var feels_like: Double = 0.0
+    var weather = List<HourlyWeatherResponse>()
+}
+
+class HourlyWeatherResponse: Object, Codable {
+    @objc dynamic var weather_icon: String = ""
+}
