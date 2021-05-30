@@ -10,7 +10,7 @@ import CoreLocation
 import RealmSwift
 
 class HomeViewController: UIViewController {
-
+    
     @IBOutlet weak var locationNameLabel: UILabel!
     @IBOutlet weak var spinner: UIActivityIndicatorView!
     @IBOutlet weak var presentDayDateNTime: UILabel!
@@ -27,20 +27,19 @@ class HomeViewController: UIViewController {
     var latitude = 0.0
     var longitude = 0.0
     var openWeatherMap_access_token = ""
-    var nextSevenDaysData = [Daily]()
-    var presentDayData = [Daily]()
-    var currentDayData = Current(dt: 0, sunrise: 0, sunset: 0, temp: 0.0, feels_like: 0.0, weather: [])
-    var hourlyData = [Hourly]()
+    var nextSevenDaysForecast = [Daily]()
+    //    var presentDayData = [Daily]()
+    var presentDayForecast = Current(dt: 0, sunrise: 0, sunset: 0, temp: 0.0, feels_like: 0.0, weather: [])
+    var presentDayHourlyForecast = [Hourly]()
     var timer = Timer()
-    var dynamicCurrentDateNTime = 0
+    var dynamicPresentDayDateTime = 0
     var timezoneIdentifier = ""
     var locationName = ""
     let dateFormatter = DateFormatter()
     var isAppEverWentInBackgroundState = false
     var timeWhenAppWentInBackground = ""
     var timeWhenAppComeInForeground = ""
-    var hourlyDataFromRealm = Array<StoredHourlyWeatherResponse>()
-    
+    var presentDayHourlyForecastFromRealm = Array<PresentDayHourlyWeatherForecastInRealm>()
     
     // MARK:- viewDidLoad() Part
     override func viewDidLoad() {
@@ -55,20 +54,20 @@ class HomeViewController: UIViewController {
             }
         }
         
-        if checkIfDataStoredInRealm() {
-            weatherForecastDisplayFromRealm()
+        if RealmDataAccessUtility.checkIfWeatherForcastsPresentInRealm(){
+            DisplayWeatherForecastFromRealm()
         }
         
-//        checkInternetConnectivity()
+        checkInternetConnectivity()
         
-//        if let userSearchedLocationName = UserDefaults.standard.string(forKey: "userSelectedPlacesnameValue") {
-//            retriveSavedLocationData(for: userSearchedLocationName)
-//        } else {
-//            checkLocationServies()
-//        }
+        //        if let userSearchedLocationName = UserDefaults.standard.string(forKey: "userSelectedPlacesnameValue") {
+        //            retriveSavedLocationData(for: userSearchedLocationName)
+        //        } else {
+        //            checkLocationServies()
+        //        }
         
         collection_View.dataSource = self
-
+        
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterInBackgroundState), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterInForegroundState), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
@@ -85,35 +84,16 @@ class HomeViewController: UIViewController {
         }
     }
     
-//    private func retriveSavedLocationData(for place: String) {
-//        locationName = place
-//        latitude = UserDefaults.standard.double(forKey: "userSelectedPlacesLatitudeValue")
-//        longitude = UserDefaults.standard.double(forKey: "userSelectedPlacesLongitudeValue")
-//    }
-    
-    private func checkIfDataStoredInRealm() -> Bool {
-        do {
-            let realmReference = try Realm()
-            print(Realm.Configuration.defaultConfiguration)
-            let fetchedDataFromRealm = realmReference.objects(StoredWeatherInfos.self)
-            
-//            for item in fetchedDataFromRealm {
-//                print(item)
-//            }
-            
-            if fetchedDataFromRealm.count > 0 {
-                return true
-            }
-        } catch {
-            print("Error in Realm Integration in HomeViewController()")
-        }
-        return false
-    }
+    //    private func retriveSavedLocationData(for place: String) {
+    //        locationName = place
+    //        latitude = UserDefaults.standard.double(forKey: "userSelectedPlacesLatitudeValue")
+    //        longitude = UserDefaults.standard.double(forKey: "userSelectedPlacesLongitudeValue")
+    //    }
     
     private func retriveSavedLocationDataFromRealm() {
         do {
             let realmReference = try Realm()
-            let fetchedDataFromRealm = realmReference.objects(StoredWeatherInfos.self)
+            let fetchedDataFromRealm = realmReference.objects(CityNameAndLocationInfoInRealm.self)
             
             if fetchedDataFromRealm.count == 1 {
                 locationName = fetchedDataFromRealm[0].stored_cityName
@@ -124,71 +104,48 @@ class HomeViewController: UIViewController {
             print("Error in Realm Integration in HomeViewController()")
         }
     }
-
+    
     // MARK: - API Calling and Display
     private func callFetchAPIData() {
-        fetchAPIData(completionHandler: { [self] (weather) in
-
-            currentDayData = weather.current
-            nextSevenDaysData = weather.daily
-            hourlyData = weather.hourly
-            timezoneIdentifier = weather.timezone
-
-            modifyDailyDataFromAPIResponse()
-            modifyHourlyDataFromAPIResponse()
-            weatherForecastDataDisplay()
+        fetchAPIData(completionHandler: { [weak self] (weather) in
+            guard let self = self else {
+                return
+            }
+            
+            self.presentDayForecast = weather.current
+            self.nextSevenDaysForecast = weather.daily
+            self.presentDayHourlyForecast = weather.hourly
+            self.timezoneIdentifier = weather.timezone
+            
+            self.modifyDailyDataFromAPIResponse()
+            self.modifyHourlyDataFromAPIResponse()
+            self.weatherForecastDataDisplay()
+            
+            RealmDataAccessUtility.savePresentDayWeatherForecastFrom(presentDayForecast: self.presentDayForecast)
+            RealmDataAccessUtility.savePresentDaysHourlyWeatherForecastFrom(data: self.presentDayHourlyForecast)
+            RealmDataAccessUtility.saveNextSevenDaysForecastFrom(data: self.nextSevenDaysForecast)
         })
     }
-
+    
     private func modifyDailyDataFromAPIResponse() {
-        if !self.nextSevenDaysData.isEmpty {
-            self.presentDayData = Array(self.nextSevenDaysData.prefix(1))
-            self.nextSevenDaysData.removeFirst()
+        if !self.nextSevenDaysForecast.isEmpty {
+            //            self.presentDayData = Array(self.nextSevenDaysData.prefix(1))
+            self.nextSevenDaysForecast.removeFirst()
         }
     }
     
     private func modifyHourlyDataFromAPIResponse() {
-        if !self.hourlyData.isEmpty {
-            print("Before Slicing", self.hourlyData.count)
-            self.hourlyData = Array(self.hourlyData[0...23])
-            print("After Slicing", self.hourlyData.count)
-            
-            saveHourlyWeatherData()
+        if !self.presentDayHourlyForecast.isEmpty {
+            print("Before Slicing", self.presentDayHourlyForecast.count)
+            self.presentDayHourlyForecast = Array(self.presentDayHourlyForecast[0...23])
+            print("After Slicing", self.presentDayHourlyForecast.count)
         }
     }
     
-    private func saveHourlyWeatherData() {
-        do {
-            let realmReference = try Realm()
-            realmReference.beginWrite()
-            realmReference.delete(realmReference.objects(StoredHourlyWeatherResponse.self))
-            try realmReference.commitWrite()
-            
-            for item in hourlyData {
-                let weatherResponseObject = List<HourlyWeatherResponse>()
-                let saveWeatherResponse = HourlyWeatherResponse()
-                saveWeatherResponse.weather_icon = item.weather[0].icon
-                weatherResponseObject.append(saveWeatherResponse)
-                
-                let hourlyWeatherDataObject =  StoredHourlyWeatherResponse()
-                hourlyWeatherDataObject.dt = item.dt
-                hourlyWeatherDataObject.temp = item.temp
-                hourlyWeatherDataObject.feels_like = item.feels_like
-                hourlyWeatherDataObject.weather = weatherResponseObject
-                
-                realmReference.beginWrite()
-                realmReference.add(hourlyWeatherDataObject)
-                try realmReference.commitWrite()
-            }
-        } catch {
-            print("Error in saving Hourly data in Realm")
-        }
-    }
-    
-    private func weatherForecastDisplayFromRealm() {
+    private func DisplayWeatherForecastFromRealm() {
         let realmReference = try! Realm()
-        let fetchedCurrentDataFromRealm = realmReference.objects(StoredCurrentWeatherResponse.self)
-        let fetchedWeatherInfo = realmReference.objects(StoredWeatherInfos.self)
+        let fetchedCurrentDataFromRealm = realmReference.objects(PresentDayWeatherForecastInRealm.self)
+        let fetchedWeatherInfo = realmReference.objects(CityNameAndLocationInfoInRealm.self)
         
         self.locationNameLabel.text = fetchedWeatherInfo[0].stored_cityName
         self.createDynamicTimeFromDevice()
@@ -206,103 +163,30 @@ class HomeViewController: UIViewController {
     
     private func hourlyForecastDisplayFromRealm() {
         let realmReference = try! Realm()
-        let fetchedHourlyDataFromRealm = realmReference.objects(StoredHourlyWeatherResponse.self)
-        hourlyDataFromRealm = Array(fetchedHourlyDataFromRealm)
+        let fetchedHourlyDataFromRealm = realmReference.objects(PresentDayHourlyWeatherForecastInRealm.self)
+        presentDayHourlyForecastFromRealm = Array(fetchedHourlyDataFromRealm)
         
     }
-
+    
     private func weatherForecastDataDisplay() {
-            DispatchQueue.main.async {
-                print("In Dispathch",self.currentDayData)
-                self.dynamicCurrentDateNTime = self.currentDayData.dt
-                self.getDynamicTimeFromResponse()
-    //                self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
-                self.presentDayTemp.text = "\(self.currentDayData.temp)°"
-                let urlString = "https://openweathermap.org/img/wn/" + self.currentDayData.weather[0].icon + ".png"
-                let url = URL(string: urlString)
-                self.presentDayWeatherIcon.imageLoad(from: url!)
-    //                self.presentDayWeatherIcon.image = UIImage(named: self.CurrentDayData.weather[0].icon)
-                self.presentDaySunriseTime.text = "Sunrise: " + self.currentDayData.sunrise.fromUnixTimeToTime()
-                self.presentDaySunsetTime.text = "Sunset: " + self.currentDayData.sunset.fromUnixTimeToTime()
-                self.presentDayFeels.text = "Feels like: \(self.currentDayData.feels_like)°C"
-                self.presentdayWeatherDescription.text = self.currentDayData.weather[0].description.capitalized
-                self.locationNameLabel.text = self.locationName
-                
-                self.collection_View.reloadData()
-                self.spinner.stopAnimating()
-                
-                self.saveCurrentWeatherData()
-                self.saveWeeklyForecastDataInRealm()
-            }
-//        }
-    }
-    
-    private func saveCurrentWeatherData() {
-        do {
-            let realmReference = try Realm()
+        DispatchQueue.main.async {
+            print("In Dispathch",self.presentDayForecast)
+            self.dynamicPresentDayDateTime = self.presentDayForecast.dt
+            self.getDynamicTimeFromResponse()
+            //                self.presentDayDateNTime.text = self.CurrentDayData.dt.fromUnixTimeToTimeNDate()
+            self.presentDayTemp.text = "\(self.presentDayForecast.temp)°"
+            let urlString = "https://openweathermap.org/img/wn/" + self.presentDayForecast.weather[0].icon + ".png"
+            let url = URL(string: urlString)
+            self.presentDayWeatherIcon.imageLoad(from: url!)
+            //                self.presentDayWeatherIcon.image = UIImage(named: self.CurrentDayData.weather[0].icon)
+            self.presentDaySunriseTime.text = "Sunrise: " + self.presentDayForecast.sunrise.fromUnixTimeToTime()
+            self.presentDaySunsetTime.text = "Sunset: " + self.presentDayForecast.sunset.fromUnixTimeToTime()
+            self.presentDayFeels.text = "Feels like: \(self.presentDayForecast.feels_like)°C"
+            self.presentdayWeatherDescription.text = self.presentDayForecast.weather[0].description.capitalized
+            self.locationNameLabel.text = self.locationName
             
-            realmReference.beginWrite()
-            realmReference.delete(realmReference.objects(StoredCurrentWeatherResponse.self))
-            realmReference.delete(realmReference.objects(PresentDayWeatherResponse.self))
-            try realmReference.commitWrite()
-            
-            let weatherResponseObject = List<PresentDayWeatherResponse>()
-            let saveWeatherResponse = PresentDayWeatherResponse()
-            saveWeatherResponse.weather_description = self.currentDayData.weather[0].description
-            saveWeatherResponse.weather_icon = self.currentDayData.weather[0].icon
-            weatherResponseObject.append(saveWeatherResponse)
-            
-            let currentWeatherDataObject =  StoredCurrentWeatherResponse()
-            currentWeatherDataObject.dt = self.currentDayData.dt
-            currentWeatherDataObject.sunrise = self.currentDayData.sunrise
-            currentWeatherDataObject.sunset = self.currentDayData.sunset
-            currentWeatherDataObject.temp = self.currentDayData.temp
-            currentWeatherDataObject.feels_like = self.currentDayData.feels_like
-            currentWeatherDataObject.weather = weatherResponseObject
-            
-            realmReference.beginWrite()
-            realmReference.add(currentWeatherDataObject)
-            try realmReference.commitWrite()
-
-        } catch {
-            print("Error in saving Current Weather Data")
-        }
-    }
-    
-    private func saveWeeklyForecastDataInRealm() {
-        do {
-            let realmReference = try Realm()
-            print("@@@@@@@@@@@@@@@@@@@@@")
-            realmReference.beginWrite()
-            realmReference.delete(realmReference.objects(StoredDailyWeatherForecasts.self))
-            realmReference.delete(realmReference.objects(TemperatureResponse.self))
-            realmReference.delete(realmReference.objects(WeatherResponse.self))
-            try realmReference.commitWrite()
-            
-            for eachItem in nextSevenDaysData {
-                let weatherList = List<WeatherResponse>()
-                let saveWeather = WeatherResponse()
-                saveWeather.weather_description = eachItem.weather.first?.description ?? ""
-                saveWeather.weather_icon = eachItem.weather.first?.icon ?? ""
-                weatherList.append(saveWeather)
-                
-                let saveTemperature = TemperatureResponse()
-                saveTemperature.max_temperature = eachItem.temp.max
-                saveTemperature.min_temperature = eachItem.temp.min
-                
-                let saveDailyWeatherForecast = StoredDailyWeatherForecasts()
-                saveDailyWeatherForecast.date_time = eachItem.dt
-                saveDailyWeatherForecast.temperature = saveTemperature
-                saveDailyWeatherForecast.weather = weatherList
-
-                realmReference.beginWrite()
-                realmReference.add(saveDailyWeatherForecast)
-                try realmReference.commitWrite()
-            }
-
-            print("@@@@@@@@@@@@@@@@@@@@@@@")
-        } catch {
-            print("Error in saving NextSevendaysData")
+            self.collection_View.reloadData()
+            self.spinner.stopAnimating()
         }
     }
     
@@ -315,15 +199,15 @@ class HomeViewController: UIViewController {
     @objc func currentTimeAfterFetchedTime(currentTime : Int) {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d, h:mm:ss a"
-//        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-//        let offset = TimeZone.current.secondsFromGMT()
-//        print("Checking", offset)
+        //        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        //        let offset = TimeZone.current.secondsFromGMT()
+        //        print("Checking", offset)
         formatter.timeZone = TimeZone(identifier: self.timezoneIdentifier)
         
         DispatchQueue.main.async {
-            self.presentDayDateNTime.text = formatter.string(from: Date(timeIntervalSince1970: TimeInterval(self.dynamicCurrentDateNTime)))
-            self.dynamicCurrentDateNTime += 1
-            print(Date(timeIntervalSince1970: TimeInterval(self.dynamicCurrentDateNTime)))
+            self.presentDayDateNTime.text = formatter.string(from: Date(timeIntervalSince1970: TimeInterval(self.dynamicPresentDayDateTime)))
+            self.dynamicPresentDayDateTime += 1
+            print(Date(timeIntervalSince1970: TimeInterval(self.dynamicPresentDayDateTime)))
         }
     }
     
@@ -342,7 +226,6 @@ class HomeViewController: UIViewController {
         }
     }
     
-    
     // MARK:- Notification Observer Action
     @objc func appWillEnterInBackgroundState() {
         print("About to go in background")
@@ -350,18 +233,18 @@ class HomeViewController: UIViewController {
         dateFormatter.dateFormat = "h:mm:ss"
         timeWhenAppWentInBackground = dateFormatter.string(from: Date())
         print("Time now -> \(timeWhenAppWentInBackground)")
-//        timer.invalidate()
+        //        timer.invalidate()
     }
-
+    
     @objc func appWillEnterInForegroundState() {
-//        fetchCurrentLocation()
-//        timer.invalidate()
-//        checkLocationServies()
+        //        fetchCurrentLocation()
+        //        timer.invalidate()
+        //        checkLocationServies()
         
         dateFormatter.dateFormat = "h:mm:ss"
         timeWhenAppComeInForeground = dateFormatter.string(from: Date())
         
-        if let timeSpent = checkHowMuchTimeAppWasInBackground(), timeSpent >= 1.0 {
+        if let timeSpent = checkHowMuchTimeAppWasInBackground(), timeSpent >= 5.0 {
             checkLocationServies()
         }
     }
@@ -382,7 +265,6 @@ class HomeViewController: UIViewController {
     }
 }
 
-
 // MARK:- Location Feteching Part
 extension HomeViewController: CLLocationManagerDelegate {
     func checkLocationServies() {
@@ -398,7 +280,7 @@ extension HomeViewController: CLLocationManagerDelegate {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
     }
-
+    
     func checkLocationAuthorization() {
         switch CLLocationManager.authorizationStatus() {
         case .authorizedWhenInUse:
@@ -409,14 +291,14 @@ extension HomeViewController: CLLocationManagerDelegate {
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
         case .restricted:
-           displayAlertWithButton(dialogTitle: "Restricted By User", dialogMessage: "This is possibly due to active restrictions such as parental controls being in place.", buttonTitle: "Close")
+            displayAlertWithButton(dialogTitle: "Restricted By User", dialogMessage: "This is possibly due to active restrictions such as parental controls being in place.", buttonTitle: "Close")
         case .authorizedAlways:
             locationManager.requestLocation()
         default:
-           displayAlertWithButton(dialogTitle: "Unknown Case!", dialogMessage: "This Permission is not handled in developing time.", buttonTitle: "Okay")
+            displayAlertWithButton(dialogTitle: "Unknown Case!", dialogMessage: "This Permission is not handled in developing time.", buttonTitle: "Okay")
         }
     }
-
+    
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         checkLocationAuthorization()
     }
@@ -433,7 +315,7 @@ extension HomeViewController: CLLocationManagerDelegate {
             self.longitude = lon
             print("CLLocationManager - Longitude: ", self.longitude)
         }
-
+        
         callReverseGeoCoder()
     }
     
@@ -441,18 +323,21 @@ extension HomeViewController: CLLocationManagerDelegate {
         print(error)
         displayAlertWithButton(dialogTitle: "Error in Fetching Location", dialogMessage: "Error Occured: \(error). Please Check Your Location On the Settings -> Privacy -> Location Services", buttonTitle: "Close")
     }
-
+    
     func displayAlertWithButton(dialogTitle title: String, dialogMessage message: String, buttonTitle name: String) {
         let dialogMessage = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okButtonInAlert = UIAlertAction(title: name, style: .default, handler: nil)
         dialogMessage.addAction(okButtonInAlert)
         self.present(dialogMessage, animated: true, completion: nil)
     }
-
+    
     private func callReverseGeoCoder() {
         let geoCoder = CLGeocoder()
-        let userCurrentLocation = CLLocation(latitude: self.latitude, longitude: self.longitude     )
+        let userCurrentLocation = CLLocation(latitude: self.latitude, longitude: self.longitude)
         geoCoder.reverseGeocodeLocation(userCurrentLocation, completionHandler: { [weak self] (placemarks, error) in
+            guard let self = self else {
+                return
+            }
             
             if let _ = error {
                 return
@@ -464,30 +349,13 @@ extension HomeViewController: CLLocationManagerDelegate {
             
             if let placeName = placemark.locality, let placeCountry =  placemark.country {
                 print(placeName)
-                self?.locationName = "\(placeName), \(placeCountry)"
+                self.locationName = "\(placeName), \(placeCountry)"
                 
                 DispatchQueue.main.async {
-                    self?.locationNameLabel.text = self?.locationName
+                    self.locationNameLabel.text = self.locationName
                 }
                 
-                do {
-                    let realmReference = try Realm()
-                    realmReference.beginWrite()
-                    realmReference.delete(realmReference.objects(StoredWeatherInfos.self))
-                    try realmReference.commitWrite()
-                    
-                    let weatherInfoObject = StoredWeatherInfos()
-                    weatherInfoObject.stored_cityName = self!.locationName
-                    weatherInfoObject.stored_latitude = self!.latitude
-                    weatherInfoObject.stored_longitude = self!.longitude
-                    
-                    realmReference.beginWrite()
-                    realmReference.add(weatherInfoObject)
-                    try realmReference.commitWrite()
-                    
-                } catch {
-                    print("Error Saving in ReverseGeocoder()")
-                }
+                RealmDataAccessUtility.saveCityNameAndCoordinatesForLocation(name: self.locationName, latitude: self.latitude, longitude: self.longitude)
                 
             } else {
                 print("Error in callReverseGeoCoder()")
@@ -541,54 +409,50 @@ extension HomeViewController {
 
 // MARK:- CollectionView
 extension HomeViewController: UICollectionViewDataSource {
-    
-    private func IsDailyWeatherDataSourceRealm() -> Bool {
-        if hourlyData.count == 0 {
-            return true
-        }
-        return false
-    }
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if IsDailyWeatherDataSourceRealm() {
-            return hourlyDataFromRealm.count
+            return presentDayHourlyForecastFromRealm.count
         }
-        return hourlyData.count
+        return presentDayHourlyForecast.count
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionview_cell", for: indexPath) as! CustomCollectionViewCell
-//        print("\(self.hourlyData[indexPath.row].temp)°C")
-//        print(self.hourlyData[indexPath.row].dt.fromUnixTimeToTime())
+        //        print("\(self.hourlyData[indexPath.row].temp)°C")
+        //        print(self.hourlyData[indexPath.row].dt.fromUnixTimeToTime())
         
         if IsDailyWeatherDataSourceRealm() {
-            cell.forecastHourlyTemp.text = "\(self.hourlyDataFromRealm[indexPath.row].temp)°C"
-            cell.forecastHourlyTime.text = self.hourlyDataFromRealm[indexPath.row].dt.fromUnixTimeToTime()
-            let urlString = "https://openweathermap.org/img/wn/" + self.hourlyDataFromRealm[indexPath.row].weather[0].weather_icon + ".png"
+            cell.forecastHourlyTemp.text = "\(self.presentDayHourlyForecastFromRealm[indexPath.row].temp)°C"
+            cell.forecastHourlyTime.text = self.presentDayHourlyForecastFromRealm[indexPath.row].dt.fromUnixTimeToTime()
+            let urlString = "https://openweathermap.org/img/wn/" + self.presentDayHourlyForecastFromRealm[indexPath.row].weather[0].weather_icon + ".png"
             if let url = URL(string: urlString) {
                 cell.forecastHourlyWeatherIcon.imageLoad(from: url)
             } else {
                 print("Error in URL() in collectionView - cellForItemAt indexPath")
             }
         } else {
-            cell.forecastHourlyTemp.text = "\(self.hourlyData[indexPath.row].temp)°C"
-            cell.forecastHourlyTime.text = self.hourlyData[indexPath.row].dt.fromUnixTimeToTime()
-    //        cell.forecastHourlyWeatherIcon.image = UIImage(named: self.HourlyData[indexPath.row].weather[0].icon)
-            let urlString = "https://openweathermap.org/img/wn/" + self.hourlyData[indexPath.row].weather[0].icon + ".png"
+            cell.forecastHourlyTemp.text = "\(self.presentDayHourlyForecast[indexPath.row].temp)°C"
+            cell.forecastHourlyTime.text = self.presentDayHourlyForecast[indexPath.row].dt.fromUnixTimeToTime()
+            //        cell.forecastHourlyWeatherIcon.image = UIImage(named: self.HourlyData[indexPath.row].weather[0].icon)
+            let urlString = "https://openweathermap.org/img/wn/" + self.presentDayHourlyForecast[indexPath.row].weather[0].icon + ".png"
             if let url = URL(string: urlString) {
                 cell.forecastHourlyWeatherIcon.imageLoad(from: url)
             } else {
                 print("Error in URL() in collectionView - cellForItemAt indexPath")
             }
         }
-        
-        
-
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-            return CGSize(width: view.frame.width, height: 180)
+        return CGSize(width: view.frame.width, height: 180)
+    }
+    
+    private func IsDailyWeatherDataSourceRealm() -> Bool {
+        if presentDayHourlyForecast.count == 0 {
+            return true
+        }
+        return false
     }
 }
 
@@ -598,19 +462,19 @@ extension HomeViewController {
         let nextViewController = segue.destination as? WeeklyDataViewController
         
         if nextViewController != nil {
-//            nextViewController?.latitude = self.latitude
-//            nextViewController?.longitude = self.longitude
-            nextViewController?.nextSevenDaysData = self.nextSevenDaysData
+            //            nextViewController?.latitude = self.latitude
+            //            nextViewController?.longitude = self.longitude
+            nextViewController?.nextSevenDaysData = self.nextSevenDaysForecast
         }
     }
     
     @IBAction func unwindToHomeViewController(_ sender: UIStoryboardSegue) {
-//        guard let userSearchedLocationName = UserDefaults.standard.string(forKey: "userSelectedPlacesnameValue") else {
-//            print("Error in retriving data from userDefaults")
-//            return
-//        }
+        //        guard let userSearchedLocationName = UserDefaults.standard.string(forKey: "userSelectedPlacesnameValue") else {
+        //            print("Error in retriving data from userDefaults")
+        //            return
+        //        }
         
-//        retriveSavedLocationData(for: userSearchedLocationName)
+        //        retriveSavedLocationData(for: userSearchedLocationName)
         retriveSavedLocationDataFromRealm()
         
         
@@ -620,19 +484,19 @@ extension HomeViewController {
         
         callFetchAPIData()
         
-//        if let sourceVC = sender.source as? SearchCityNameViewController {
-//            // store data in the variables
-//            locationName = sourceVC.userSelectedPlacesname
-//            latitude = sourceVC.userSelectedPlacesLatitude
-//            longitude = sourceVC.userSelectedPlacesLongitude
-//
-//            DispatchQueue.main.async {
-//                self.spinner.startAnimating()
-//            }
-//
-//            // Call the FetchAPIData()
-//            timer.invalidate()
-//            callFetchAPIData()
-//        }
+        //        if let sourceVC = sender.source as? SearchCityNameViewController {
+        //            // store data in the variables
+        //            locationName = sourceVC.userSelectedPlacesname
+        //            latitude = sourceVC.userSelectedPlacesLatitude
+        //            longitude = sourceVC.userSelectedPlacesLongitude
+        //
+        //            DispatchQueue.main.async {
+        //                self.spinner.startAnimating()
+        //            }
+        //
+        //            // Call the FetchAPIData()
+        //            timer.invalidate()
+        //            callFetchAPIData()
+        //        }
     }
 }

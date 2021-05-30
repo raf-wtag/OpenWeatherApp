@@ -8,57 +8,49 @@
 import Foundation
 import RealmSwift
 
-class StoredWeatherInfos: Object {
+class CityNameAndLocationInfoInRealm: Object {
     @objc dynamic var stored_cityName: String = ""
     @objc dynamic var stored_latitude: Double = 0.0
     @objc dynamic var stored_longitude: Double = 0.0
 }
 
-//class StoredWeeklyWeatherInfos: Object {
-//    @objc dynamic var stored_weekDate: String = ""
-//    @objc dynamic var stored_weatherIcon: String = ""
-//    @objc dynamic var stored_weatherDescription: String = ""
-//    @objc dynamic var stored_maxTemp: String = ""
-//    @objc dynamic var stored_minTemp: String = ""
-//}
-
-class StoredDailyWeatherForecasts: Object {
+class NextSevenDaysWeatherForecastInRealm: Object {
     @objc dynamic var date_time: Int = 0
-    @objc dynamic var temperature: TemperatureResponse?
-    var weather: List<WeatherResponse> = List<WeatherResponse>()
+    @objc dynamic var temperature: TemperatureResponseInRealm?
+    var weather: List<NextSevenDaysWeatherDetailsInRealm> = List<NextSevenDaysWeatherDetailsInRealm>()
 }
 
-class TemperatureResponse: Object {
+class TemperatureResponseInRealm: Object {
     @objc dynamic var max_temperature: Double = 0.0
     @objc dynamic var min_temperature: Double = 0.0
 }
 
-class WeatherResponse: Object, Codable {
+class NextSevenDaysWeatherDetailsInRealm: Object, Codable {
     @objc dynamic var weather_description: String = ""
     @objc dynamic var weather_icon: String = ""
 }
 
-class StoredCurrentWeatherResponse: Object {
+class PresentDayWeatherForecastInRealm: Object {
     @objc dynamic var dt: Int = 0
     @objc dynamic var sunrise : Int = 0
     @objc dynamic var sunset : Int = 0
     @objc dynamic var temp : Double = 0.0
     @objc dynamic var feels_like : Double = 0.0
-    var weather = List<PresentDayWeatherResponse>()
+    var weather = List<PresentDayWeatherDetailsInRealm>()
 }
 
-class PresentDayWeatherResponse: Object, Codable {
+class PresentDayWeatherDetailsInRealm: Object, Codable {
     @objc dynamic var weather_description: String = ""
     @objc dynamic var weather_icon: String = ""
 }
 
-class StoredHourlyWeatherResponse: Object {
+class PresentDayHourlyWeatherForecastInRealm: Object {
     @objc dynamic var dt: Int = 0
     @objc dynamic var temp: Double = 0.0
     @objc dynamic var feels_like: Double = 0.0
-    var weather = List<HourlyWeatherResponse>()
+    var weather = List<PresentDayHourlyWeatherDetailsInRealm>()
 }
 
-class HourlyWeatherResponse: Object, Codable {
+class PresentDayHourlyWeatherDetailsInRealm: Object, Codable {
     @objc dynamic var weather_icon: String = ""
 }

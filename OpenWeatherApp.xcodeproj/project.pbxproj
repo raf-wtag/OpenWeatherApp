@@ -15,6 +15,7 @@
 		FF7751312626A0CD00740D62 /* CodableStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF7751302626A0CD00740D62 /* CodableStructures.swift */; };
 		FF7751342626A21400740D62 /* AutoCompleteLocationCustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF7751332626A21400740D62 /* AutoCompleteLocationCustomTableViewCell.swift */; };
 		FF885A6426149EAB00F0FAFF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF885A6326149EAB00F0FAFF /* Extensions.swift */; };
+		FF89AEB426636BC700BCC168 /* RealmDataAccessUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF89AEB326636BC700BCC168 /* RealmDataAccessUtility.swift */; };
 		FFB1CC83262B4CC600A692FE /* FileReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFB1CC82262B4CC600A692FE /* FileReader.swift */; };
 		FFBDC71F2615CBE5002779BE /* CustomCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFBDC71E2615CBE5002779BE /* CustomCollectionViewCell.swift */; };
 		FFBF0E272612F0370028C11B /* Keys.json in Resources */ = {isa = PBXBuildFile; fileRef = FFBF0E262612F0370028C11B /* Keys.json */; };
@@ -39,6 +40,7 @@
 		FF7751302626A0CD00740D62 /* CodableStructures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableStructures.swift; sourceTree = "<group>"; };
 		FF7751332626A21400740D62 /* AutoCompleteLocationCustomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoCompleteLocationCustomTableViewCell.swift; sourceTree = "<group>"; };
 		FF885A6326149EAB00F0FAFF /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		FF89AEB326636BC700BCC168 /* RealmDataAccessUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmDataAccessUtility.swift; sourceTree = "<group>"; };
 		FFB1CC82262B4CC600A692FE /* FileReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileReader.swift; sourceTree = "<group>"; };
 		FFBDC71E2615CBE5002779BE /* CustomCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCollectionViewCell.swift; sourceTree = "<group>"; };
 		FFBF0E262612F0370028C11B /* Keys.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Keys.json; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				FF885A6326149EAB00F0FAFF /* Extensions.swift */,
 				FF7751302626A0CD00740D62 /* CodableStructures.swift */,
 				FF6DF6CE265B7BE100DCBD6D /* RealmClasses.swift */,
+				FF89AEB326636BC700BCC168 /* RealmDataAccessUtility.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -295,6 +298,7 @@
 				FF6DF6CF265B7BE100DCBD6D /* RealmClasses.swift in Sources */,
 				FFD71E4F2611D6AA00C8BFA5 /* HomeViewController.swift in Sources */,
 				FFD71E532611DAA700C8BFA5 /* WeeklyDataViewController.swift in Sources */,
+				FF89AEB426636BC700BCC168 /* RealmDataAccessUtility.swift in Sources */,
 				FF885A6426149EAB00F0FAFF /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

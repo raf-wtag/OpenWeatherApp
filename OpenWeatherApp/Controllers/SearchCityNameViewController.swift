@@ -168,24 +168,7 @@ extension SearchCityNameViewController: UITableViewDataSource, UITableViewDelega
         self.userSelectedPlacesname = self.suggestedPlacenames[indexPath.row].place_name ?? "Error"
 //        UserDefaults.standard.set(userSelectedPlacesname, forKey: "userSelectedPlacesnameValue")
         
-        do {
-            print(Realm.Configuration.defaultConfiguration)
-            let realmReference = try Realm()
-            
-            let weatherInfoObject = StoredWeatherInfos()
-            weatherInfoObject.stored_cityName = userSelectedPlacesname
-            weatherInfoObject.stored_latitude = userSelectedPlacesLatitude
-            weatherInfoObject.stored_longitude = userSelectedPlacesLongitude
-        
-            
-            realmReference.beginWrite()
-            realmReference.delete(realmReference.objects(StoredWeatherInfos.self))
-            realmReference.add(weatherInfoObject)
-            try realmReference.commitWrite()
-    
-        } catch {
-            print("Error in creating Realm Reference or writing in Realm!")
-        }
+        RealmDataAccessUtility.saveCityNameAndCoordinatesForLocation(name: userSelectedPlacesname, latitude: userSelectedPlacesLatitude, longitude: userSelectedPlacesLongitude)
         
         performSegue(withIdentifier: "unwindSegue", sender: self)
     }
