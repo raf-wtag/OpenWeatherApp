@@ -38,6 +38,7 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate {
 
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.tableFooterView = UIView()
     }
     
     // MARK:- SearchBar Delegate Functions

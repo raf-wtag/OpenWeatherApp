@@ -54,3 +54,7 @@ class PresentDayHourlyWeatherForecastInRealm: Object {
 class PresentDayHourlyWeatherDetailsInRealm: Object, Codable {
     @objc dynamic var weather_icon: String = ""
 }
+
+class PresentDayTimezoneOffsetInRealm: Object {
+    @objc dynamic var timezone_offset: String = ""
+}

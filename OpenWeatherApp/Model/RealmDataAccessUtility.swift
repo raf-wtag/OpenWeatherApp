@@ -61,6 +61,18 @@ class RealmDataAccessUtility {
         }
     }
     
+    static func deletePresentDayTimezoneOffsetData() {
+        do {
+            let realmReference = try Realm()
+            
+            try realmReference.write {
+                realmReference.delete(realmReference.objects(PresentDayTimezoneOffsetInRealm.self))
+            }
+        } catch {
+            print("Error in delete next seven days weather forecast data from realm")
+        }
+    }
+    
 
     static func saveCityNameAndCoordinatesForLocation(name: String, latitude: Double, longitude: Double) {
         do {
@@ -166,6 +178,24 @@ class RealmDataAccessUtility {
             
         } catch {
             print("Error in saving NextSevendaysData")
+        }
+    }
+    
+    static func savePresentDayTime(from identifier: String) {
+        do {
+            let realmReference = try Realm()
+            
+            RealmDataAccessUtility.deletePresentDayTimezoneOffsetData()
+            
+            let saveTimezoneIdentifier = PresentDayTimezoneOffsetInRealm()
+            saveTimezoneIdentifier.timezone_offset = identifier
+            
+            try realmReference.write {
+                realmReference.add(saveTimezoneIdentifier)
+            }
+            
+        } catch {
+            print("Error in saving timezone offset")
         }
     }
     
