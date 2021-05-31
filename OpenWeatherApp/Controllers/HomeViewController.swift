@@ -76,7 +76,7 @@ class HomeViewController: UIViewController {
     private func checkInternetConnectivity() {
         if InternetConnectionCheck.ConnectionStatus() {
             checkLocationServies()
-            callFetchAPIData()
+//            callFetchAPIData()
         } else {
             displayAlertWithButton(dialogTitle: "No Internet", dialogMessage: "Please connect to Wi-Fi or enable Mobile Data to see the Weather Forecasts", buttonTitle: "Close")
             DispatchQueue.main.async {
@@ -325,7 +325,7 @@ extension HomeViewController: CLLocationManagerDelegate {
             self.longitude = lon
             print("CLLocationManager - Longitude: ", self.longitude)
         }
-        
+        callFetchAPIData()
         callReverseGeoCoder()
     }
     
