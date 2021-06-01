@@ -17,7 +17,7 @@ class CityNameAndLocationInfoInRealm: Object {
 class NextSevenDaysWeatherForecastInRealm: Object {
     @objc dynamic var date_time: Int = 0
     @objc dynamic var temperature: TemperatureResponseInRealm?
-    var weather: List<NextSevenDaysWeatherDetailsInRealm> = List<NextSevenDaysWeatherDetailsInRealm>()
+    var weather: List<WeatherDetailsInRealm> = List<WeatherDetailsInRealm>()
 }
 
 class TemperatureResponseInRealm: Object {
@@ -25,10 +25,9 @@ class TemperatureResponseInRealm: Object {
     @objc dynamic var min_temperature: Double = 0.0
 }
 
-class NextSevenDaysWeatherDetailsInRealm: Object, Codable {
-    @objc dynamic var weather_description: String = ""
-    @objc dynamic var weather_icon: String = ""
-}
+//class NextSevenDaysWeatherDetailsInRealm: Object {
+//    @objc dynamic var weather_details: WeatherDetailsInRealm? = WeatherDetailsInRealm()
+//}
 
 class PresentDayWeatherForecastInRealm: Object {
     @objc dynamic var dt: Int = 0
@@ -36,25 +35,29 @@ class PresentDayWeatherForecastInRealm: Object {
     @objc dynamic var sunset : Int = 0
     @objc dynamic var temp : Double = 0.0
     @objc dynamic var feels_like : Double = 0.0
-    var weather = List<PresentDayWeatherDetailsInRealm>()
+    var weather: List<WeatherDetailsInRealm> = List<WeatherDetailsInRealm>()
 }
 
-class PresentDayWeatherDetailsInRealm: Object, Codable {
-    @objc dynamic var weather_description: String = ""
-    @objc dynamic var weather_icon: String = ""
-}
+//class PresentDayWeatherDetailsInRealm: Object {
+//    @objc dynamic var weather_details: WeatherDetailsInRealm? = WeatherDetailsInRealm()
+//}
 
 class PresentDayHourlyWeatherForecastInRealm: Object {
     @objc dynamic var dt: Int = 0
     @objc dynamic var temp: Double = 0.0
     @objc dynamic var feels_like: Double = 0.0
-    var weather = List<PresentDayHourlyWeatherDetailsInRealm>()
+    var weather: List<WeatherDetailsInRealm> = List<WeatherDetailsInRealm>()
 }
 
-class PresentDayHourlyWeatherDetailsInRealm: Object, Codable {
-    @objc dynamic var weather_icon: String = ""
-}
+//class PresentDayHourlyWeatherDetailsInRealm: Object {
+//    @objc dynamic var weather_details: WeatherDetailsInRealm? = WeatherDetailsInRealm()
+//}
 
 class PresentDayTimezoneOffsetInRealm: Object {
     @objc dynamic var timezone_offset: String = ""
+}
+
+class WeatherDetailsInRealm: Object, Codable {
+    @objc dynamic var weather_description: String = ""
+    @objc dynamic var weather_icon: String = ""
 }

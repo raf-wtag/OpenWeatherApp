@@ -36,6 +36,8 @@ class WeeklyDataViewController: UIViewController, UITableViewDataSource, UITable
                 let fetchedNextSevenDaysData = realmReference.objects(NextSevenDaysWeatherForecastInRealm.self)
 //                nextSevenDaysDataFromRealm = Array(retrivedData)
                 
+                nextSevenDaysData.removeAll()
+                
                 for _ in 0...6 {
                     nextSevenDaysData.append(Daily(dt: 0, sunrise: 0, sunset: 0, temp: Temp(day: 0.0, min: 0.0, max: 0.0, night: 0.0, eve: 0.0, morn: 0.0), feels_like: feels_like(day: 0.0, night: 0.0, eve: 0.0, morn: 0.0), pressure: 0, humidity: 0, dew_point: 0.0, wind_speed: 0.0, wind_deg: 0, weather: [Weather(id: 0, main: "", description: "", icon: "")], clouds: 0, uvi: 0.0))
                 }

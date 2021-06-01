@@ -39,7 +39,7 @@ class HomeViewController: UIViewController {
     var isAppEverWentInBackgroundState = false
     var timeWhenAppWentInBackground = ""
     var timeWhenAppComeInForeground = ""
-    var presentDayHourlyForecastFromRealm = Array<PresentDayHourlyWeatherForecastInRealm>()
+//    var presentDayHourlyForecastFromRealm = Array<PresentDayHourlyWeatherForecastInRealm>()
     
     // MARK:- viewDidLoad() Part
     override func viewDidLoad() {
@@ -54,7 +54,7 @@ class HomeViewController: UIViewController {
             }
         }
         
-        if RealmDataAccessUtility.checkIfWeatherForcastsPresentInRealm(){
+        if RealmDataAccessUtility.checkIfWeatherForcastsPresentInRealm() {
             loadDataInHomeViewFromRealm()
             weatherForecastDataDisplay()
         }
@@ -122,6 +122,7 @@ class HomeViewController: UIViewController {
             self.modifyHourlyDataFromAPIResponse()
             self.weatherForecastDataDisplay()
             
+            RealmDataAccessUtility.deleteWeatherDetailsClassData()
             RealmDataAccessUtility.savePresentDayWeatherForecastFrom(presentDayForecast: self.presentDayForecast)
             RealmDataAccessUtility.savePresentDaysHourlyWeatherForecastFrom(data: self.presentDayHourlyForecast)
             RealmDataAccessUtility.saveNextSevenDaysForecastFrom(data: self.nextSevenDaysForecast)
@@ -167,8 +168,6 @@ class HomeViewController: UIViewController {
             }
             
             for item in 0..<fetchedHourlyDataFromRealm.count {
-                print(item)
-                print(presentDayHourlyForecast[item].dt)
                 presentDayHourlyForecast[item].dt = fetchedHourlyDataFromRealm[item].dt
                 presentDayHourlyForecast[item].feels_like = fetchedHourlyDataFromRealm[item].feels_like
                 presentDayHourlyForecast[item].temp = fetchedHourlyDataFromRealm[item].temp

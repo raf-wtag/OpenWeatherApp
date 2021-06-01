@@ -9,7 +9,7 @@ import Foundation
 import RealmSwift
 
 class RealmDataAccessUtility {
-    static func DeleteCityNameAndCoordinateClass() {
+    static func deleteCityNameAndCoordinateClassData() {
         do {
             let realmReference = try Realm()
             
@@ -21,47 +21,47 @@ class RealmDataAccessUtility {
         }
     }
     
-    static func DeletePresentDayHourlyWeatherForecastClass() {
+    static func deletePresentDayHourlyWeatherForecastClassData() {
         do {
             let realmReference = try Realm()
             
             try realmReference.write {
                 realmReference.delete(realmReference.objects(PresentDayHourlyWeatherForecastInRealm.self))
-                realmReference.delete(realmReference.objects(PresentDayHourlyWeatherDetailsInRealm.self))
+//                realmReference.delete(realmReference.objects(PresentDayHourlyWeatherDetailsInRealm.self))
             }
         } catch {
             print("Error in delete nextSevenDayForecast class data in realm")
         }
     }
     
-    static func DeletePresentDayWeatherForecastClass() {
+    static func deletePresentDayWeatherForecastClassData() {
         do {
             let realmReference = try Realm()
             
             try realmReference.write {
                 realmReference.delete(realmReference.objects(PresentDayWeatherForecastInRealm.self))
-                realmReference.delete(realmReference.objects(PresentDayWeatherDetailsInRealm.self))
+//                realmReference.delete(realmReference.objects(PresentDayWeatherDetailsInRealm.self))
             }
         } catch {
             print("Error in delete Present day weather forecast data from realm")
         }
     }
     
-    static func deleteNextSevenDaysWeatherForecastData() {
+    static func deleteNextSevenDaysWeatherForecastClassData() {
         do {
             let realmReference = try Realm()
             
             try realmReference.write {
                 realmReference.delete(realmReference.objects(NextSevenDaysWeatherForecastInRealm.self))
                 realmReference.delete(realmReference.objects(TemperatureResponseInRealm.self))
-                realmReference.delete(realmReference.objects(NextSevenDaysWeatherDetailsInRealm.self))
+//                realmReference.delete(realmReference.objects(NextSevenDaysWeatherDetailsInRealm.self))
             }
         } catch {
             print("Error in delete next seven days weather forecast data from realm")
         }
     }
     
-    static func deletePresentDayTimezoneOffsetData() {
+    static func deletePresentDayTimezoneOffsetClassData() {
         do {
             let realmReference = try Realm()
             
@@ -73,12 +73,24 @@ class RealmDataAccessUtility {
         }
     }
     
+    static func deleteWeatherDetailsClassData() {
+        do {
+            let realmReference = try Realm()
+            
+            try realmReference.write {
+                realmReference.delete(realmReference.objects(WeatherDetailsInRealm.self))
+            }
+        } catch {
+            print("Error in delete next seven days weather forecast data from realm")
+        }
+    }
+    
 
     static func saveCityNameAndCoordinatesForLocation(name: String, latitude: Double, longitude: Double) {
         do {
             let realmReference = try Realm()
             
-            RealmDataAccessUtility.DeleteCityNameAndCoordinateClass()
+            RealmDataAccessUtility.deleteCityNameAndCoordinateClassData()
             
             let storeCityNameAndLocationInfo = CityNameAndLocationInfoInRealm()
             storeCityNameAndLocationInfo.stored_cityName = name
@@ -97,11 +109,12 @@ class RealmDataAccessUtility {
         do {
             let realmReference = try Realm()
             
-            RealmDataAccessUtility.DeletePresentDayHourlyWeatherForecastClass()
+            RealmDataAccessUtility.deletePresentDayHourlyWeatherForecastClassData()
+            
             
             for item in data {
-                let weatherResponseObject = List<PresentDayHourlyWeatherDetailsInRealm>()
-                let saveWeatherResponse = PresentDayHourlyWeatherDetailsInRealm()
+                let weatherResponseObject = List<WeatherDetailsInRealm>()
+                let saveWeatherResponse = WeatherDetailsInRealm()
                 saveWeatherResponse.weather_icon = item.weather[0].icon
                 weatherResponseObject.append(saveWeatherResponse)
                 
@@ -124,10 +137,10 @@ class RealmDataAccessUtility {
         do {
             let realmReference = try Realm()
             
-            RealmDataAccessUtility.DeletePresentDayWeatherForecastClass()
+            RealmDataAccessUtility.deletePresentDayWeatherForecastClassData()
             
-            let weatherResponseObject = List<PresentDayWeatherDetailsInRealm>()
-            let saveWeatherResponse = PresentDayWeatherDetailsInRealm()
+            let weatherResponseObject = List<WeatherDetailsInRealm>()
+            let saveWeatherResponse = WeatherDetailsInRealm()
             saveWeatherResponse.weather_description = presentDayForecast.weather[0].description
             saveWeatherResponse.weather_icon = presentDayForecast.weather[0].icon
             weatherResponseObject.append(saveWeatherResponse)
@@ -153,11 +166,11 @@ class RealmDataAccessUtility {
         do {
             let realmReference = try Realm()
             
-            RealmDataAccessUtility.deleteNextSevenDaysWeatherForecastData()
+            RealmDataAccessUtility.deleteNextSevenDaysWeatherForecastClassData()
             
             for eachItem in data {
-                let weatherList = List<NextSevenDaysWeatherDetailsInRealm>()
-                let saveWeather = NextSevenDaysWeatherDetailsInRealm()
+                let weatherList = List<WeatherDetailsInRealm>()
+                let saveWeather = WeatherDetailsInRealm()
                 saveWeather.weather_description = eachItem.weather.first?.description ?? ""
                 saveWeather.weather_icon = eachItem.weather.first?.icon ?? ""
                 weatherList.append(saveWeather)
@@ -185,7 +198,7 @@ class RealmDataAccessUtility {
         do {
             let realmReference = try Realm()
             
-            RealmDataAccessUtility.deletePresentDayTimezoneOffsetData()
+            RealmDataAccessUtility.deletePresentDayTimezoneOffsetClassData()
             
             let saveTimezoneIdentifier = PresentDayTimezoneOffsetInRealm()
             saveTimezoneIdentifier.timezone_offset = identifier
