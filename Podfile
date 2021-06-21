@@ -5,5 +5,7 @@ use_frameworks!
 target 'OpenWeatherApp' do
   # Pods for OpenWeatherApp
   pod 'RealmSwift'
+  pod 'Alamofire', '~> 5.4'
+
 
 end

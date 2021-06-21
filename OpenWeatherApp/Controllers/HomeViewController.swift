@@ -8,6 +8,7 @@
 import UIKit
 import CoreLocation
 import RealmSwift
+import Alamofire
 
 class HomeViewController: UIViewController {
     
@@ -390,29 +391,40 @@ extension HomeViewController {
         
         print(urlString)
         
-        guard let url = URL(string: urlString) else {
-            print("Error In URL construction in fetchAPIData()")
-            return
+        AF.request(urlString).responseData { response in
+            if let data = response.data {
+                do {
+                    let result = try JSONDecoder().decode(WeatherData.self, from: data)
+                    completionHandler(result)
+                } catch {
+                    print("Error in Data Decoding in fetchAPIData()", error)
+                }
+            }
         }
         
-        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-            guard let data = data, error == nil else {
-                print("Error Occured in Retrieving Data in fetchAPIData()")
-                return
-            }
-            
-            if let jsonData = try? JSONSerialization.jsonObject(with: data, options: []) {
-                print(jsonData)
-            }
-            
-            do {
-                let result = try JSONDecoder().decode(WeatherData.self, from: data)
-                completionHandler(result)
-            } catch {
-                print("Error in Data Decoding in fetchAPIData()", error)
-            }
-        }
-        task.resume()
+//        guard let url = URL(string: urlString) else {
+//            print("Error In URL construction in fetchAPIData()")
+//            return
+//        }
+//
+//        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+//            guard let data = data, error == nil else {
+//                print("Error Occured in Retrieving Data in fetchAPIData()")
+//                return
+//            }
+//
+//            if let jsonData = try? JSONSerialization.jsonObject(with: data, options: []) {
+//                print(jsonData)
+//            }
+//
+//            do {
+//                let result = try JSONDecoder().decode(WeatherData.self, from: data)
+//                completionHandler(result)
+//            } catch {
+//                print("Error in Data Decoding in fetchAPIData()", error)
+//            }
+//        }
+//        task.resume()
     }
 }
 
