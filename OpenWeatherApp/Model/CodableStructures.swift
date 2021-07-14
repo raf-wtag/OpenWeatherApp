@@ -32,17 +32,17 @@ struct WeatherData: Codable {
 
 struct Daily: Codable {
     var dt: Int
-    let sunrise: Int
-    let sunset: Int
-    let temp: Temp
-    let feels_like: feels_like
-    let pressure: Int
-    let humidity: Int
-    let dew_point: Double
-    let wind_speed: Double
-    let wind_deg: Int
-    let weather: [Weather]
-    let clouds: Int
+    var sunrise: Int
+    var sunset: Int
+    var temp: Temp
+    var feels_like: feels_like
+    var pressure: Int
+    var humidity: Int
+    var dew_point: Double
+    var wind_speed: Double
+    var wind_deg: Int
+    var weather: [Weather]
+    var clouds: Int
 //    let pop: Int?
     let uvi: Double
     
@@ -54,12 +54,12 @@ struct Daily: Codable {
 
 
 struct Temp: Codable {
-    let day: Double
-    let min: Double
-    let max: Double
-    let night: Double
-    let eve: Double
-    let morn: Double
+    var day: Double
+    var min: Double
+    var max: Double
+    var night: Double
+    var eve: Double
+    var morn: Double
 }
 
 
@@ -74,27 +74,27 @@ struct feels_like: Codable {
 struct Weather: Codable {
     let id: Int
     let main: String
-    let description: String
-    let icon: String
+    var description: String
+    var icon: String
 }
 
 
 
 struct Current: Codable {
     var dt : Int
-    let sunrise : Int
-    let sunset : Int
-    let temp : Double 
-    let feels_like : Double
-    let weather : [Weather]
+    var sunrise : Int
+    var sunset : Int
+    var temp : Double
+    var feels_like : Double
+    var weather : [Weather]
     
 }
 
 struct Hourly: Codable {
-    let dt: Int
-    let temp: Double
-    let feels_like: Double
-    let weather: [Weather]
+    var dt: Int
+    var temp: Double
+    var feels_like: Double
+    var weather: [Weather]
 }
 
 struct Response: Codable {

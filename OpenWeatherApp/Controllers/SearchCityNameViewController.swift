@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import RealmSwift
+import Network
 
 class SearchCityNameViewController: UIViewController,UISearchBarDelegate {
 
@@ -36,6 +38,7 @@ class SearchCityNameViewController: UIViewController,UISearchBarDelegate {
 
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.tableFooterView = UIView()
     }
     
     // MARK:- SearchBar Delegate Functions
@@ -158,13 +161,15 @@ extension SearchCityNameViewController: UITableViewDataSource, UITableViewDelega
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.userSelectedPlacesLatitude = suggestedPlacenames[indexPath.row].geometry.coordinates[1]
-        UserDefaults.standard.set(userSelectedPlacesLatitude, forKey: "userSelectedPlacesLatitudeValue")
+//        UserDefaults.standard.set(userSelectedPlacesLatitude, forKey: "userSelectedPlacesLatitudeValue")
 
         self.userSelectedPlacesLongitude = suggestedPlacenames[indexPath.row].geometry.coordinates[0]
-        UserDefaults.standard.set(userSelectedPlacesLongitude, forKey: "userSelectedPlacesLongitudeValue")
+//        UserDefaults.standard.set(userSelectedPlacesLongitude, forKey: "userSelectedPlacesLongitudeValue")
 
         self.userSelectedPlacesname = self.suggestedPlacenames[indexPath.row].place_name ?? "Error"
-        UserDefaults.standard.set(userSelectedPlacesname, forKey: "userSelectedPlacesnameValue")
+//        UserDefaults.standard.set(userSelectedPlacesname, forKey: "userSelectedPlacesnameValue")
+        
+        RealmDataAccessUtility.saveCityNameAndCoordinatesForLocation(name: userSelectedPlacesname, latitude: userSelectedPlacesLatitude, longitude: userSelectedPlacesLongitude)
         
         performSegue(withIdentifier: "unwindSegue", sender: self)
     }
